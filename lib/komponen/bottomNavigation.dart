@@ -1,11 +1,8 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:projek_skripsi/Aset/ControllerLogic.dart';
-import 'package:projek_skripsi/Notif/Notification.dart';
+import 'package:projek_skripsi/PilihAC.dart';
 import 'package:projek_skripsi/settings/settings.dart';
-
-import '../dashboard.dart';
+import '../Catatan/Dashboards.dart';
 import '../profile.dart';
 
 class BottomNav extends StatefulWidget {
@@ -39,7 +36,7 @@ class _BottomNavState extends State<BottomNav> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Dashboard()),
+                    MaterialPageRoute(builder: (context) => Dashboards()),
                   );
                 },
                 child: Column(
@@ -60,7 +57,10 @@ class _BottomNavState extends State<BottomNav> {
               padding: const EdgeInsets.only(right: 45.0),
               child: GestureDetector(
                 onTap: (){
-                  Navigator.pushNamed(context, '/halaman_notif');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => PilihAset()),
+                  );
                 },
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,

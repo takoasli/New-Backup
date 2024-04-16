@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 
 import '../../Catatan/catatanAset.dart';
@@ -124,23 +125,42 @@ class _MoreDetailmobilState extends State<MoreDetailmobil> {
                         ),
                         child: IconButton(
                           onPressed: (){
-                            List<dynamic> kebutuhanMobil = widget.data['Kebutuhan Mobil'];
+                            AwesomeDialog(
+                              context: context,
+                              dialogType: DialogType.infoReverse,
+                              headerAnimationLoop: false,
+                              animType: AnimType.topSlide,
+                              showCloseIcon: true,
+                              closeIcon: const Icon(Icons.close),
+                              title: 'Peringatan',
+                              desc:
+                              'Silahkan Periksa Aset! Apa Perlu Diservis?',
+                              btnOkOnPress: () {
+                                List<dynamic> kebutuhanMobil = widget.data['Kebutuhan Mobil'];
 
-                            List<String> namaKebutuhan = [];
-                            for (var kebutuhan in kebutuhanMobil) {
-                              if (kebutuhan is Map<String, dynamic> && kebutuhan.containsKey('Nama Kebutuhan Mobil')) {
-                                namaKebutuhan.add(kebutuhan['Nama Kebutuhan Mobil']);
-                              }
-                            }
+                                List<String> namaKebutuhan = [];
+                                for (var kebutuhan in kebutuhanMobil) {
+                                  if (kebutuhan is Map<String, dynamic> && kebutuhan.containsKey('Nama Kebutuhan Mobil')) {
+                                    namaKebutuhan.add(kebutuhan['Nama Kebutuhan Mobil']);
+                                  }
+                                }
 
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => Catatan(
-                              List_Kebutuhan: namaKebutuhan,
-                              ID_Aset: widget.data['ID Mobil'],
-                              Nama_Aset: widget.data['Merek Mobil'],
-                              Jenis_Aset: widget.data['Jenis Aset'],
-                                lokasiAset: widget.data['Lokasi'])
-                            )
-                            );
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => Catatan(
+                                    List_Kebutuhan: namaKebutuhan,
+                                    ID_Aset: widget.data['ID Mobil'],
+                                    Nama_Aset: widget.data['Merek Mobil'],
+                                    Jenis_Aset: widget.data['Jenis Aset'],
+                                    lokasiAset: widget.data['Lokasi'])
+                                )
+                                );
+                              },
+                              btnCancelOnPress: () {
+                                //harusnya ngereset kebutuhan asetnya
+                              },
+                              onDismissCallback: (type) {
+                                debugPrint('button yang ditekan $type');
+                              },
+                            ).show();
                           },
                           icon: Icon(Icons.border_color_outlined,
                               size: 33),
@@ -252,7 +272,6 @@ class _MoreDetailmobilState extends State<MoreDetailmobil> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['Merek Mobil']}',
                                 style: const TextStyle(
@@ -260,7 +279,7 @@ class _MoreDetailmobilState extends State<MoreDetailmobil> {
                                   letterSpacing: 1,
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 15),
 
                               Text(
                                   'ID Mobil',
@@ -270,7 +289,6 @@ class _MoreDetailmobilState extends State<MoreDetailmobil> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['ID Mobil']}',
                                 style: const TextStyle(
@@ -278,7 +296,7 @@ class _MoreDetailmobilState extends State<MoreDetailmobil> {
                                   letterSpacing: 1,
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 15),
 
                               Text(
                                   'Kapasitas Mesin',
@@ -288,7 +306,6 @@ class _MoreDetailmobilState extends State<MoreDetailmobil> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['Tipe Mesin']} cc',
                                 style: const TextStyle(
@@ -296,7 +313,7 @@ class _MoreDetailmobilState extends State<MoreDetailmobil> {
                                   letterSpacing: 1,
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 15),
 
                               Text(
                                   'Jenis Bahan Bakar',
@@ -306,7 +323,6 @@ class _MoreDetailmobilState extends State<MoreDetailmobil> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['Jenis Bahan Bakar']}',
                                 style: const TextStyle(
@@ -314,7 +330,7 @@ class _MoreDetailmobilState extends State<MoreDetailmobil> {
                                   letterSpacing: 1,
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 15),
 
                               Text(
                                   'Pendingin Mesin',
@@ -324,7 +340,6 @@ class _MoreDetailmobilState extends State<MoreDetailmobil> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['Sistem Pendingin Mesin']}',
                                 style: const TextStyle(
@@ -332,7 +347,7 @@ class _MoreDetailmobilState extends State<MoreDetailmobil> {
                                   letterSpacing: 1,
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 15),
 
                               Text(
                                   'Tipe Transmisi',
@@ -342,7 +357,6 @@ class _MoreDetailmobilState extends State<MoreDetailmobil> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['Tipe Transmisi']}',
                                 style: const TextStyle(
@@ -350,7 +364,7 @@ class _MoreDetailmobilState extends State<MoreDetailmobil> {
                                   letterSpacing: 1,
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 15),
 
                               Text(
                                   'Kapasitas Bahan Bakar',
@@ -360,7 +374,6 @@ class _MoreDetailmobilState extends State<MoreDetailmobil> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['Kapasitas Bahan Bakar']}',
                                 style: const TextStyle(
@@ -368,7 +381,7 @@ class _MoreDetailmobilState extends State<MoreDetailmobil> {
                                   letterSpacing: 1,
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 15),
 
                               Text(
                                   'Ukuran Ban',
@@ -378,7 +391,6 @@ class _MoreDetailmobilState extends State<MoreDetailmobil> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['Ukuran Ban']}',
                                 style: const TextStyle(
@@ -386,7 +398,7 @@ class _MoreDetailmobilState extends State<MoreDetailmobil> {
                                   letterSpacing: 1,
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 15),
 
                               Text(
                                   'Aki',
@@ -396,7 +408,6 @@ class _MoreDetailmobilState extends State<MoreDetailmobil> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['Aki']}',
                                 style: const TextStyle(
@@ -405,25 +416,6 @@ class _MoreDetailmobilState extends State<MoreDetailmobil> {
                                 ),
                               ),
                               const SizedBox(height: 10),
-
-                              Text(
-                                  'Tempo Maintenance',
-                                  style: TextStyles.title.copyWith(
-                                      fontSize: 18,
-                                      color: Warna.darkgrey,
-                                      fontWeight: FontWeight.w500
-                                  )
-                              ),
-                              SizedBox(height: 5),
-                              Text(
-                                '${widget.data['Masa Servis']} Bulan',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  letterSpacing: 1,
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-
                             ],
                           ),
                         ),

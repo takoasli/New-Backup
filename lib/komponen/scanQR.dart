@@ -6,9 +6,10 @@ import 'package:projek_skripsi/Aset/AC/moreDetailAC.dart';
 import 'package:projek_skripsi/Aset/Laptop/moreDetailLaptop.dart';
 import 'package:projek_skripsi/Aset/Mobil/MoreDetailMobil.dart';
 import 'package:projek_skripsi/Aset/Motor/MoreDetailMotor.dart';
-import 'package:projek_skripsi/Dashboard.dart';
+import 'package:projek_skripsi/komponen/style.dart';
 
 import '../Aset/PC/MoreDetailPC.dart';
+import '../Catatan/Dashboards.dart';
 
 class ScanQR extends StatelessWidget {
 
@@ -120,7 +121,7 @@ class ScanQR extends StatelessWidget {
       btnOkOnPress: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => Dashboard()),
+          MaterialPageRoute(builder: (context) => Dashboards()),
         );
       },
     ).show();
@@ -129,45 +130,34 @@ class ScanQR extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 75,
-      height: 75,
-      child: FloatingActionButton(
-        onPressed: () async {
-          String barcode = await FlutterBarcodeScanner.scanBarcode(
-            "#FF0000",
-            "Cancel",
-            true,
-            ScanMode.QR,
-          );
-          if (barcode != '-1') {
-            String assetType = determineAssetType(barcode);
-            String assetId = extractAssetId(barcode);
-            if (assetType.isNotEmpty && assetId.isNotEmpty) {
-              Map<String, dynamic>? assetData = await fetchDataFromFirestore(assetType, assetId);
-              if (assetData != null) {
-                navigateToSpecificAsset(context, assetType, assetData);
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 20),
+        child: FloatingActionButton(
+          onPressed: () async {
+            String barcode = await FlutterBarcodeScanner.scanBarcode(
+              "#FF0000",
+              "Cancel",
+              true,
+              ScanMode.QR,
+            );
+            if (barcode != '-1') {
+              String assetType = determineAssetType(barcode);
+              String assetId = extractAssetId(barcode);
+              if (assetType.isNotEmpty && assetId.isNotEmpty) {
+                Map<String, dynamic>? assetData = await fetchDataFromFirestore(assetType, assetId);
+                if (assetData != null) {
+                  navigateToSpecificAsset(context, assetType, assetData);
+                } else {
+                  showNotFoundDialog(context, barcode);
+                }
               } else {
                 showNotFoundDialog(context, barcode);
               }
-            } else {
-              showNotFoundDialog(context, barcode);
             }
-          }
-          print(barcode);
-        },
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.0),
-          side: const BorderSide(
-            color: Colors.green,
-            width: 6.0,
-            style: BorderStyle.solid,
-          ),
-        ),
-        child: Image.asset(
-          "gambar/qr_code.png",
-          height: 50,
-          width: 50,
+            print(barcode);
+          },
+          backgroundColor: Warna.green,
+          child: Icon(Icons.qr_code_scanner)
         ),
       ),
     );

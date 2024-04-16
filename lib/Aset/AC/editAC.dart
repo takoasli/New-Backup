@@ -44,11 +44,11 @@ class KebutuhanModelUpdateAC {
     };
   }
 }
-enum ACStatus { aktif, rusak, hilang }
-ACStatus selectedStatus = ACStatus.aktif;
+
 
 class _UpdateACState extends State<UpdateAC> {
   String selectedRuangan = "";
+  String selectedStatus = "";
   final MerekACController = TextEditingController();
   final idACController = TextEditingController();
   final wattController = TextEditingController();
@@ -79,6 +79,12 @@ class _UpdateACState extends State<UpdateAC> {
     "STUDIO",
     "TELE SALES",
     "MANAGER EKSPORT"
+  ];
+
+  List<String> StatusAC = [
+    "Aktif",
+    "Rusak",
+    "Hilang"
   ];
   String oldphotoIndoor = '';
   String oldphotoOutdoor = '';
@@ -153,19 +159,6 @@ class _UpdateACState extends State<UpdateAC> {
       fln: flutterLocalNotificationsPlugin,
       id: id,
     );
-  }
-
-  String getStatusAC(ACStatus status) {
-    switch (status) {
-      case ACStatus.aktif:
-        return 'Aktif';
-      case ACStatus.rusak:
-        return 'Rusak';
-      case ACStatus.hilang:
-        return 'Hilang';
-      default:
-        return '';
-    }
   }
 
   void tambahKebutuhan_AC(){
@@ -260,7 +253,6 @@ class _UpdateACState extends State<UpdateAC> {
     try{
       String GambarACIndoor;
       String GambarACOutdoor;
-      String status = getStatusAC(selectedStatus);
       List<Map<String, dynamic>> ListKebutuhan_AC = Kebutuhan_AC.map((kebutuhan) {
         var timeKebutuhan = contTimeService(int.parse(kebutuhan['Masa Kebutuhan AC'].toString()));
         return {
@@ -297,7 +289,7 @@ class _UpdateACState extends State<UpdateAC> {
           'Jenis Aset' : 'AC',
           'Waktu Kebutuhan AC' : waktuKebutuhanAC.millisecondsSinceEpoch,
           'Hari Kebutuhan AC' : daysBetween(DateTime.now(), waktuKebutuhanAC),
-          'Status' : status
+          'Status' : selectedStatus
         };
         await FirebaseFirestore.instance.collection('Aset').doc(dokAC).update(DataACBaru);
       }
@@ -424,41 +416,29 @@ class _UpdateACState extends State<UpdateAC> {
                         .copyWith(fontSize: 15, color: Warna.darkgrey),
                   ),
                 ),
-                Column(
-                  children: [
-                    RadioListTile<ACStatus>(
-                      title: Text('Aktif'),
-                      value: ACStatus.aktif,
-                      groupValue: selectedStatus,
-                      onChanged: (ACStatus? value){
-                        setState(() {
-                          selectedStatus = value ?? ACStatus.aktif;
-                        });
-                      },
+                DropdownSearch<String>(
+                  popupProps: PopupProps.menu(
+                    showSelectedItems: true,
+                  ),
+                  items: StatusAC,
+                  dropdownDecoratorProps: DropDownDecoratorProps(
+                    dropdownSearchDecoration: InputDecoration(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                        hintText: "...",
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30)
+                        )
                     ),
-                    RadioListTile<ACStatus>(
-                      title: Text('Rusak'),
-                      value: ACStatus.rusak,
-                      groupValue: selectedStatus,
-                      onChanged: (ACStatus? value){
-                        setState(() {
-                          selectedStatus = value ?? ACStatus.rusak;
-                        });
-                      },
-                    ),
-                    RadioListTile<ACStatus>(
-                      title: Text('Hilang'),
-                      value: ACStatus.hilang,
-                      groupValue: selectedStatus,
-                      onChanged: (ACStatus? value){
-                        setState(() {
-                          selectedStatus = value ?? ACStatus.hilang;
-                        });
-                      },
-                    ),
-                  ],
+                  ),
+                  onChanged: (selectedValue){
+                    print(selectedValue);
+                    setState(() {
+                      selectedStatus = selectedValue ?? "";
+                    });
+                  },
                 ),
                 const SizedBox(height: 10),
+
                 Padding(
                   padding: const EdgeInsets.only(bottom: 3),
                   child: Text(

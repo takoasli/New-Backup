@@ -1,13 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-import 'package:projek_skripsi/Aset/AC/DetailAC.dart';
-import 'package:projek_skripsi/Aset/AC/ManajemenAC.dart';
-
-import '../../dashboard.dart';
-import '../../komponen/bottomNavigation.dart';
-import '../../komponen/box.dart';
 import '../../komponen/style.dart';
-import '../../profile.dart';
 
 class AC extends StatefulWidget {
   const AC({super.key});
@@ -21,8 +13,9 @@ class _ACState extends State<AC> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        backgroundColor: Warna.green,
         appBar: AppBar(
-          backgroundColor: const Color(0xFF61BF9D),
+          backgroundColor: Warna.green,
           title: const Text(
             'AC',
             style: TextStyle(
@@ -34,90 +27,96 @@ class _ACState extends State<AC> {
           elevation: 0,
           centerTitle: false,
         ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 5),
-            Padding(
-              padding: const EdgeInsets.all(17.0),
-              child: Text(
-                'Silahkan Pilih',
-                style: TextStyles.title.copyWith(
-                  color: Warna.black,
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
+        body: Center(
+          child: Container(
+            width: 370,
+            height: 560,
+            decoration: BoxDecoration(
+              color: Warna.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            padding: const EdgeInsets.all(20),
+            child: ListView(
+              physics: NeverScrollableScrollPhysics(),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: GestureDetector(
+                    onTap: (){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => AC()),
+                      );
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      height: 70,
+                      decoration: BoxDecoration(
+                        color: Warna.green, // Warna latar belakang kotak
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3), // Warna bayangan
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: Offset(0, 3), // Geser bayangan pada sumbu Y
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Air Conditioner (AC)',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 5),
 
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Box(
-                      text: 'AC',
-                      warna: Warna.green,
-                      gambar: 'gambar/ac.png',
-                      halaman: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => DetailAC()),
-                        );
-                      },
-                    ),
-                    SizedBox(width: 40),
-                    Box(
-                      text: 'Manajemen AC',
-                      warna: Warna.green,
-                      gambar: 'gambar/manajement aset.png',
-                      halaman: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => ManajemenAC()),
-                        );
-                      },
-                    ),
-                  ]
-              ),
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
-        backgroundColor: Colors.white,
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: SizedBox(
-          width: 75,
-          height: 75,
-          child: FloatingActionButton(
-            onPressed: () async {
-              String barcode = await FlutterBarcodeScanner.scanBarcode(
-                "#FF0000",
-                "Cancel",
-                true,
-                ScanMode.QR,
-              );
+                const SizedBox(height: 15),
 
-              print(barcode);
-            },
-            backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20.0),
-              side: const BorderSide(
-                color: Colors.green,
-                width: 6.0,
-                style: BorderStyle.solid,
-              ),
-            ),
-            child: Image.asset(
-              "gambar/qr_code.png",
-              height: 50,
-              width: 50,
+                Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: GestureDetector(
+                    onTap: (){
+
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      height: 70,
+                      decoration: BoxDecoration(
+                        color: Warna.green, // Warna latar belakang kotak
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3), // Warna bayangan
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: Offset(0, 3), // Geser bayangan pada sumbu Y
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Personal Computer',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
-        bottomNavigationBar: BottomNav(),
       ),
     );
   }

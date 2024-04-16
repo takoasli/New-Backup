@@ -1,24 +1,29 @@
-import 'package:flutter/material.dart';
-import 'package:projek_skripsi/Aset/ControllerLogic.dart';
-import 'package:projek_skripsi/Catatan/bacaCatatanExport.dart';
-import 'package:projek_skripsi/komponen/style.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dropdown_search/dropdown_search.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:projek_skripsi/textfield/textfields.dart';
 
+import '../Aset/ControllerLogic.dart';
+import '../komponen/style.dart';
+
 class ExportCatatan extends StatefulWidget {
-  const ExportCatatan({Key? key});
+  const ExportCatatan({Key? key}) : super(key: key);
 
   @override
   State<ExportCatatan> createState() => _ExportCatatanState();
 }
 
-final List<String> kategoriWaktu = ['Bulan ini', 'Tahun ini', 'Semua'];
-List<String> kategoriTerpilih = [];
-late List<String> DokCatatanEX = [];
-
 class _ExportCatatanState extends State<ExportCatatan> {
-
+  String selectedWaktu = "";
+  List<String> kategoriTerpilih = [];
+  late List<String> DokCatatanEX = [];
   final namaFile = TextEditingController();
+  List<String> Waktu = [
+    "Bulan ini",
+    "Tahun ini",
+    "Semua",
+  ];
 
   Future<void> getCatatan(List<String> selectedCategories) async {
     if (selectedCategories.contains('Semua')) {
@@ -89,7 +94,6 @@ class _ExportCatatanState extends State<ExportCatatan> {
     getCatatan(kategoriTerpilih);
   }
 
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Warna.green,
@@ -106,160 +110,143 @@ class _ExportCatatanState extends State<ExportCatatan> {
         elevation: 0,
         centerTitle: false,
       ),
-      body: Center(
-        child: Container(
-          width: 370,
-          height: 570,
-          decoration: BoxDecoration(
-            color: Colors.grey.shade100,
-            borderRadius: BorderRadius.circular(20),
+      body: Column(
+        children: [
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 55),
+              child: Image.asset(
+                'gambar/gambar file.png',
+                fit: BoxFit.contain,
+                width: 240,
+                height: 240,
+              ),
+            ),
           ),
-          padding: const EdgeInsets.all(20),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Wrap(
-                  alignment: WrapAlignment.start,
-                  spacing: 8.0,
-                  runSpacing: 8.0,
-                  children: List.generate(
-                    kategoriWaktu.length,
-                        (waktu) {
-                      return FilterChip(
-                        selected: kategoriTerpilih.contains(kategoriWaktu[waktu]),
-                        showCheckmark: false,
-                        label: Padding(
-                          padding: const EdgeInsets.all(5),
-                          child: Text(
-                            kategoriWaktu[waktu],
-                            style: TextStyle(
-                              color: kategoriTerpilih.contains(
-                                  kategoriWaktu[waktu])
-                                  ? Warna.white
-                                  : Colors.black,
+
+          // Taro containernya disini
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 50),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Warna.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(40),
+                    topRight: Radius.circular(40),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      spreadRadius: 4,
+                      blurRadius: 5,
+                      offset: Offset(0, 3), // changes position of shadow
+                    ),
+                  ],
+                ),
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 20.0),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 30, right: 30),
+                            child: Icon(
+                              Icons.download_for_offline,
+                              size: 55,
+                              color: Warna.green,
                             ),
                           ),
-                        ),
-                        backgroundColor: kategoriTerpilih.contains(
-                            kategoriWaktu[waktu])
-                            ? Warna.lightgreen // Warna kalo dipilih
-                            : Warna.white,
-                        // Warna kalo tidak dipilih
-                        selectedColor: Warna.lightgreen,
-                        // Warna latar belakang
-                        onSelected: (selected) {
-                          setState(() {
-                            if (selected) {
-                              kategoriTerpilih.clear();
-                              kategoriTerpilih.add(kategoriWaktu[waktu]);
-                            } else {
-                              kategoriTerpilih.remove(kategoriWaktu[waktu]);
-                            }
-                            getCatatan(kategoriTerpilih);
-                          });
-                        },
-                      );
-                    },
-                  ),
-                ),
-                SizedBox(
-                  height: 250,
-                  width: 320,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Warna.green,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: DokCatatanEX.length,
-                            itemBuilder: (BuildContext context, int indeks) {
-                              return Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: Material(
-                                  borderRadius: BorderRadius.circular(10),
-                                  elevation: 5,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(12.0),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: BacaCatatExport(
-                                            dokumenCatatanEx: DokCatatanEX[indeks],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+
+                          // Ini dropdown menu
+                          Container(
+                            width: 263,
+                            decoration: BoxDecoration(
+                              color: Warna.white,
+                              borderRadius: BorderRadius.circular(25),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.blueGrey.shade500.withOpacity(0.2),
+                                  spreadRadius: 2,
+                                  blurRadius: 3,
+                                  offset: Offset(0, 2), // changes position of shadow
                                 ),
-                              );
-                            },
-                          ),
+                              ],
+                            ),
+                            child: DropdownSearch<String>(
+                              popupProps: PopupProps.menu(
+                                showSelectedItems: true,
+                              ),
+                              items: Waktu,
+                              dropdownDecoratorProps: DropDownDecoratorProps(
+                                dropdownSearchDecoration: InputDecoration(
+                                    contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                                    hintText: "Pilih...",
+                                    border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(30),
+                                    )
+                                ),
+                              ),
+                              onChanged: (selectedValue){
+                                print(selectedValue);
+                                setState(() {
+                                  selectedWaktu = selectedValue ?? "";
+                                });
+                              },
+                            ),
+                          )
                         ],
                       ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 30),
+
+                    // Column di sini
                     Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Nama File',
-                              style: TextStyles.title.copyWith(fontSize: 17, color: Warna.darkgrey),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
                         MyTextField(
-                          textInputType: TextInputType.text,
-                          hint: '',
-                          textInputAction: TextInputAction.done,
-                          controller: namaFile,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 30),
-                    Align(
-                      alignment: Alignment.center,
-                      child: ElevatedButton(
-                        onPressed: (){
-                          exportExcel(
-                              dokumenCatatan: DokCatatanEX,
-                              namafile: namaFile.text,
-                              context: context);
-                        },
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Warna.green,
-                            minimumSize: const Size(200, 50),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(25))
-                        ),
-                        child: SizedBox(
-                          width: 200,
-                          child: Center(
-                            child: Text(
-                              'Export',
-                              style: TextStyles.title
-                                  .copyWith(fontSize: 20, color: Colors.white),
+                              textInputType: TextInputType.text,
+                              hint: 'Nama File...',
+                              textInputAction: TextInputAction.done,
+                              controller: namaFile),
+
+                        Padding(
+                          padding: const EdgeInsets.only(top: 25),
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: ElevatedButton(
+                              onPressed: (){
+
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Warna.green,
+                                  minimumSize: const Size(150, 40),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(25))
+                              ),
+                              child: SizedBox(
+                                width: 200,
+                                child: Center(
+                                  child: Text(
+                                    'Export',
+                                    style: TextStyles.title
+                                        .copyWith(fontSize: 18, color: Colors.white),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
+
+                          ],
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 25),
-                  ],
+                ),
+              ),
             ),
-          ),
-        ),
+        ],
       ),
     );
   }

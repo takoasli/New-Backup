@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:projek_skripsi/dashboard.dart';
+import 'package:projek_skripsi/Catatan/Dashboards.dart';
 import 'package:projek_skripsi/login.dart';
 
 class Auth extends StatelessWidget {
@@ -13,7 +13,7 @@ class Auth extends StatelessWidget {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return Dashboard();
+            return Dashboards();
           } else {
             return const Login();
           }

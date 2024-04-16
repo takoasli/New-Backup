@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 
 import '../../Catatan/catatanAset.dart';
@@ -129,23 +130,40 @@ class _MoreDetailLaptopState extends State<MoreDetailLaptop> {
                         ),
                         child: IconButton(
                           onPressed: (){
-                            List<dynamic> kebutuhanLaptop = widget.data['Kebutuhan Laptop'];
+                            AwesomeDialog(
+                              context: context,
+                              dialogType: DialogType.infoReverse,
+                              headerAnimationLoop: false,
+                              animType: AnimType.topSlide,
+                              showCloseIcon: true,
+                              closeIcon: const Icon(Icons.close),
+                              title: 'Peringatan',
+                              desc:
+                              'Silahkan Periksa Aset! Apa Perlu Diservis?',
+                              btnOkOnPress: () {
+                                List<dynamic> kebutuhanLaptop = widget.data['Kebutuhan Laptop'];
 
-                            List<String> namaKebutuhan = [];
-                            for (var kebutuhan in kebutuhanLaptop) {
-                              if (kebutuhan is Map<String, dynamic> && kebutuhan.containsKey('Nama Kebutuhan Laptop')) {
-                                namaKebutuhan.add(kebutuhan['Nama Kebutuhan Laptop']);
-                              }
-                            }
+                                List<String> namaKebutuhan = [];
+                                for (var kebutuhan in kebutuhanLaptop) {
+                                  if (kebutuhan is Map<String, dynamic> && kebutuhan.containsKey('Nama Kebutuhan Laptop')) {
+                                    namaKebutuhan.add(kebutuhan['Nama Kebutuhan Laptop']);
+                                  }
+                                }
 
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => Catatan(
-                              List_Kebutuhan: namaKebutuhan,
-                              ID_Aset: widget.data['ID Laptop'],
-                              Nama_Aset: widget.data['Merek Laptop'],
-                              Jenis_Aset: widget.data['Jenis Aset'],
-                              lokasiAset: widget.data['Lokasi Ruangan'],)
-                            )
-                            );
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => Catatan(
+                                  List_Kebutuhan: namaKebutuhan,
+                                  ID_Aset: widget.data['ID Laptop'],
+                                  Nama_Aset: widget.data['Merek Laptop'],
+                                  Jenis_Aset: widget.data['Jenis Aset'],
+                                  lokasiAset: widget.data['Lokasi Ruangan'],)
+                                )
+                                );
+                              },
+                              btnCancelOnPress: () {},
+                              onDismissCallback: (type) {
+                                debugPrint('button yang ditekan $type');
+                              },
+                            ).show();
                           },
                           icon: Icon(Icons.border_color_outlined,
                               size: 33),
@@ -258,7 +276,6 @@ class _MoreDetailLaptopState extends State<MoreDetailLaptop> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['Merek Laptop']}',
                                 style: const TextStyle(
@@ -266,7 +283,7 @@ class _MoreDetailLaptopState extends State<MoreDetailLaptop> {
                                   letterSpacing: 1,
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 15),
 
                               Text(
                                   'ID laptop',
@@ -276,7 +293,6 @@ class _MoreDetailLaptopState extends State<MoreDetailLaptop> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['ID Laptop']}',
                                 style: const TextStyle(
@@ -284,7 +300,7 @@ class _MoreDetailLaptopState extends State<MoreDetailLaptop> {
                                   letterSpacing: 1,
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 15),
 
                               Text(
                                   'Lokasi Ruangan',
@@ -294,7 +310,6 @@ class _MoreDetailLaptopState extends State<MoreDetailLaptop> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['Ruangan']}',
                                 style: const TextStyle(
@@ -302,7 +317,7 @@ class _MoreDetailLaptopState extends State<MoreDetailLaptop> {
                                   letterSpacing: 1,
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 15),
 
                               Text(
                                   'CPU',
@@ -312,7 +327,6 @@ class _MoreDetailLaptopState extends State<MoreDetailLaptop> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['CPU']}',
                                 style: const TextStyle(
@@ -320,7 +334,7 @@ class _MoreDetailLaptopState extends State<MoreDetailLaptop> {
                                   letterSpacing: 1,
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 15),
 
                               Text(
                                   'RAM',
@@ -330,7 +344,6 @@ class _MoreDetailLaptopState extends State<MoreDetailLaptop> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['RAM']} GB',
                                 style: const TextStyle(
@@ -338,7 +351,7 @@ class _MoreDetailLaptopState extends State<MoreDetailLaptop> {
                                   letterSpacing: 1,
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 15),
 
                               Text(
                                   'Kapasitas Penyimpanan',
@@ -348,7 +361,6 @@ class _MoreDetailLaptopState extends State<MoreDetailLaptop> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['Kapasitas Penyimpanan']} GB',
                                 style: const TextStyle(
@@ -356,7 +368,7 @@ class _MoreDetailLaptopState extends State<MoreDetailLaptop> {
                                   letterSpacing: 1,
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 15),
 
                               Text(
                                   'VGA',
@@ -366,7 +378,6 @@ class _MoreDetailLaptopState extends State<MoreDetailLaptop> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['VGA']}',
                                 style: const TextStyle(
@@ -374,7 +385,7 @@ class _MoreDetailLaptopState extends State<MoreDetailLaptop> {
                                   letterSpacing: 1,
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 15),
 
                               Text(
                                   'Ukuran Monitor',
@@ -384,7 +395,6 @@ class _MoreDetailLaptopState extends State<MoreDetailLaptop> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['Ukuran Monitor']} inch',
                                 style: TextStyle(
@@ -393,7 +403,6 @@ class _MoreDetailLaptopState extends State<MoreDetailLaptop> {
                                 ),
                               ),
                               const SizedBox(height: 10),
-
                             ],
                           ),
                         ),

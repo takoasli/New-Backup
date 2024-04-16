@@ -3,8 +3,6 @@ import 'package:projek_skripsi/settings/ExportAset.dart';
 import 'package:projek_skripsi/settings/ExportCatatan.dart';
 import 'package:projek_skripsi/settings/GantiPassword.dart';
 
-import '../komponen/style.dart';
-
 class Settings extends StatefulWidget {
   const Settings({super.key});
 
@@ -13,7 +11,7 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-  double _listTileHeight = 70.0; // Atur tinggi sesuai kebutuhan
+  double _listTileHeight = 70.0;
 
   @override
   Widget build(BuildContext context) {

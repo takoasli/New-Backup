@@ -1,6 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:projek_skripsi/Aset/PC/ManajemenPC.dart';
 import 'package:projek_skripsi/baca%20data/detail%20Baca%20Aset/DetailBacaPC.dart';
+
+import '../../komponen/style.dart';
 
 class DetailPC extends StatefulWidget {
   const DetailPC({Key? key}) : super(key: key);
@@ -78,6 +82,50 @@ class _DetailPCState extends State<DetailPC> {
                 ),
               ))
         ],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: SpeedDial(
+          child: Icon(Icons.more_horiz,
+          color: Warna.white),
+          backgroundColor: Warna.green,
+          activeIcon: Icons.close,
+          curve: Curves.bounceIn,
+          children: [
+            SpeedDialChild(
+              elevation: 0,
+              child: const Icon(Icons.create_new_folder,
+                  color: Warna.white),
+              labelWidget: const Text("Manage PC",
+                  style: TextStyle(color: Warna.green)
+              ),
+              backgroundColor: Warna.green,
+              onTap: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ManajemenPC()),
+                );
+              },
+            ),
+
+            SpeedDialChild(
+              elevation: 0,
+              child: const Icon(Icons.monitor,
+                  color: Warna.white),
+              labelWidget: const Text("Detail PC",
+                  style: TextStyle(color: Warna.green)
+              ),
+              backgroundColor: Warna.green,
+              onTap: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => DetailPC()),
+                );
+              },
+            )
+          ],
+        ),
       ),
     );
   }

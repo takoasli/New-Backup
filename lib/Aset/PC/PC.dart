@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:projek_skripsi/Aset/PC/DetailPC.dart';
 import 'package:projek_skripsi/Aset/PC/ManajemenPC.dart';
-
-import '../../dashboard.dart';
 import '../../komponen/bottomNavigation.dart';
 import '../../komponen/box.dart';
 import '../../komponen/style.dart';

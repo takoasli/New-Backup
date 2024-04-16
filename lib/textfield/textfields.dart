@@ -53,7 +53,7 @@ class MyTextField extends StatelessWidget {
             borderRadius: BorderRadius.circular(30),
           ),
           hintText: hint,
-          hintStyle: TextStyles.body.copyWith(color: Warna.white),
+          hintStyle: TextStyles.body.copyWith(color: Warna.grey),
           contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
         ),
       ),

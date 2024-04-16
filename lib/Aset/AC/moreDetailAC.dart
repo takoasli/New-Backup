@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import '../../Catatan/catatanAset.dart';
 import '../../komponen/style.dart';
@@ -138,26 +139,45 @@ class _MoreDetailACState extends State<MoreDetailAC> {
                         ),
                         child: IconButton(
                           onPressed: (){
-                            List<dynamic> kebutuhanAC =
-                            widget.data['Kebutuhan AC'];
-                            List<String> namaKebutuhan = [];
-                            for (var kebutuhan in kebutuhanAC) {
-                              if (kebutuhan is Map<String, dynamic> &&
-                                  kebutuhan.containsKey('Nama Kebutuhan AC')) {
-                                namaKebutuhan.add(kebutuhan['Nama Kebutuhan AC']);
-                              }
-                            }
+                            AwesomeDialog(
+                              context: context,
+                              dialogType: DialogType.infoReverse,
+                              headerAnimationLoop: false,
+                              animType: AnimType.topSlide,
+                              showCloseIcon: true,
+                              closeIcon: const Icon(Icons.close),
+                              title: 'Peringatan',
+                              desc:
+                              'Silahkan Periksa Aset! Apa Perlu Diservis?',
+                              btnOkOnPress: () {
+                                List<dynamic> kebutuhanAC =
+                                widget.data['Kebutuhan AC'];
+                                List<String> namaKebutuhan = [];
+                                for (var kebutuhan in kebutuhanAC) {
+                                  if (kebutuhan is Map<String, dynamic> &&
+                                      kebutuhan.containsKey('Nama Kebutuhan AC')) {
+                                    namaKebutuhan.add(kebutuhan['Nama Kebutuhan AC']);
+                                  }
+                                }
 
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Catatan(
-                                      List_Kebutuhan: namaKebutuhan,
-                                      ID_Aset: widget.data['ID AC'],
-                                      Nama_Aset: widget.data['Merek AC'],
-                                      Jenis_Aset: widget.data['Jenis Aset'],
-                                      lokasiAset: widget.data['Ruangan'],
-                                    )));
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Catatan(
+                                          List_Kebutuhan: namaKebutuhan,
+                                          ID_Aset: widget.data['ID AC'],
+                                          Nama_Aset: widget.data['Merek AC'],
+                                          Jenis_Aset: widget.data['Jenis Aset'],
+                                          lokasiAset: widget.data['Ruangan'],
+                                        )
+                                    )
+                                );
+                              },
+                              btnCancelOnPress: () {},
+                              onDismissCallback: (type) {
+                                debugPrint('button yang ditekan $type');
+                              },
+                            ).show();
                           },
                           icon: Icon(Icons.border_color_outlined,
                               size: 33),
@@ -267,7 +287,6 @@ class _MoreDetailACState extends State<MoreDetailAC> {
                                       fontSize: 18,
                                       color: Warna.darkgrey,
                                       fontWeight: FontWeight.w500)),
-                              SizedBox(height: 10),
                               Text(
                                 '${widget.data['Merek AC']}',
                                 style: const TextStyle(
@@ -275,13 +294,12 @@ class _MoreDetailACState extends State<MoreDetailAC> {
                                   letterSpacing: 1,
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 15),
                               Text('ID AC',
                                   style: TextStyles.title.copyWith(
                                       fontSize: 18,
                                       color: Warna.darkgrey,
                                       fontWeight: FontWeight.w500)),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['ID AC']}',
                                 style: const TextStyle(
@@ -289,13 +307,12 @@ class _MoreDetailACState extends State<MoreDetailAC> {
                                   letterSpacing: 1,
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 15),
                               Text('Lokasi Ruangan',
                                   style: TextStyles.title.copyWith(
                                       fontSize: 18,
                                       color: Warna.darkgrey,
                                       fontWeight: FontWeight.w500)),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['Ruangan']}',
                                 style: const TextStyle(
@@ -303,13 +320,25 @@ class _MoreDetailACState extends State<MoreDetailAC> {
                                   letterSpacing: 1,
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 15),
+                              Text('Status',
+                                  style: TextStyles.title.copyWith(
+                                      fontSize: 18,
+                                      color: Warna.darkgrey,
+                                      fontWeight: FontWeight.w500)),
+                              Text(
+                                '${widget.data['Status']}',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  letterSpacing: 1,
+                                ),
+                              ),
+                              const SizedBox(height: 15),
                               Text('Kapasitas Watt',
                                   style: TextStyles.title.copyWith(
                                       fontSize: 18,
                                       color: Warna.darkgrey,
                                       fontWeight: FontWeight.w500)),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['Kapasitas Watt']} watt',
                                 style: const TextStyle(
@@ -317,29 +346,14 @@ class _MoreDetailACState extends State<MoreDetailAC> {
                                   letterSpacing: 1,
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 15),
                               Text('Kapasitas PK',
                                   style: TextStyles.title.copyWith(
                                       fontSize: 18,
                                       color: Warna.darkgrey,
                                       fontWeight: FontWeight.w500)),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['Kapasitas PK']}',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  letterSpacing: 1,
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              Text('Tempo Maintenance',
-                                  style: TextStyles.title.copyWith(
-                                      fontSize: 18,
-                                      color: Warna.darkgrey,
-                                      fontWeight: FontWeight.w500)),
-                              SizedBox(height: 5),
-                              Text(
-                                '${widget.data['Masa Servis']} Bulan',
                                 style: const TextStyle(
                                   fontSize: 16,
                                   letterSpacing: 1,

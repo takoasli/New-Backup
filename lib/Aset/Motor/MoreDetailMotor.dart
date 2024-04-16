@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 
 import '../../Catatan/catatanAset.dart';
@@ -123,23 +124,40 @@ class _MoreDetailMotorState extends State<MoreDetailMotor> {
                         ),
                         child: IconButton(
                           onPressed: (){
-                            List<dynamic> kebutuhanMobil = widget.data['Kebutuhan Motor'];
+                            AwesomeDialog(
+                              context: context,
+                              dialogType: DialogType.infoReverse,
+                              headerAnimationLoop: false,
+                              animType: AnimType.topSlide,
+                              showCloseIcon: true,
+                              closeIcon: const Icon(Icons.close),
+                              title: 'Peringatan',
+                              desc:
+                              'Silahkan Periksa Aset! Apa Perlu Diservis?',
+                              btnOkOnPress: () {
+                                List<dynamic> kebutuhanMotor = widget.data['Kebutuhan Motor'];
 
-                            List<String> namaKebutuhan = [];
-                            for (var kebutuhan in kebutuhanMobil) {
-                              if (kebutuhan is Map<String, dynamic> && kebutuhan.containsKey('Nama Kebutuhan Motor')) {
-                                namaKebutuhan.add(kebutuhan['Nama Kebutuhan Motor']);
-                              }
-                            }
+                                List<String> namaKebutuhan = [];
+                                for (var kebutuhan in kebutuhanMotor) {
+                                  if (kebutuhan is Map<String, dynamic> && kebutuhan.containsKey('Nama Kebutuhan Motor')) {
+                                    namaKebutuhan.add(kebutuhan['Nama Kebutuhan Motor']);
+                                  }
+                                }
 
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => Catatan(
-                              List_Kebutuhan: namaKebutuhan,
-                              ID_Aset: widget.data['ID Motor'],
-                              Nama_Aset: widget.data['Merek Motor'],
-                              Jenis_Aset: widget.data['Jenis Aset'],
-                              lokasiAset: widget.data['Lokasi'],)
-                            )
-                            );
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => Catatan(
+                                  List_Kebutuhan: namaKebutuhan,
+                                  ID_Aset: widget.data['ID Motor'],
+                                  Nama_Aset: widget.data['Merek Motor'],
+                                  Jenis_Aset: widget.data['Jenis Aset'],
+                                  lokasiAset: widget.data['Lokasi'],)
+                                )
+                                );
+                              },
+                              btnCancelOnPress: () {},
+                              onDismissCallback: (type) {
+                                debugPrint('button yang ditekan $type');
+                              },
+                            ).show();
                           },
                           icon: Icon(Icons.border_color_outlined,
                               size: 33),
@@ -251,7 +269,6 @@ class _MoreDetailMotorState extends State<MoreDetailMotor> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['Merek Motor']}',
                                 style: const TextStyle(
@@ -269,7 +286,6 @@ class _MoreDetailMotorState extends State<MoreDetailMotor> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['ID Motor']}',
                                 style: const TextStyle(
@@ -287,7 +303,6 @@ class _MoreDetailMotorState extends State<MoreDetailMotor> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['Kapasitas Mesin']}',
                                 style: const TextStyle(
@@ -305,7 +320,6 @@ class _MoreDetailMotorState extends State<MoreDetailMotor> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['Sistem Pendingin']}',
                                 style: const TextStyle(
@@ -323,7 +337,6 @@ class _MoreDetailMotorState extends State<MoreDetailMotor> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['Tipe Transmisi']}',
                                 style: const TextStyle(
@@ -341,7 +354,6 @@ class _MoreDetailMotorState extends State<MoreDetailMotor> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['Kapasitas Bahan Bakar']}',
                                 style: const TextStyle(
@@ -359,7 +371,6 @@ class _MoreDetailMotorState extends State<MoreDetailMotor> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['Kapasitas Minyak']}',
                                 style: const TextStyle(
@@ -377,7 +388,6 @@ class _MoreDetailMotorState extends State<MoreDetailMotor> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['Tipe Aki']}',
                                 style: const TextStyle(
@@ -395,7 +405,6 @@ class _MoreDetailMotorState extends State<MoreDetailMotor> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['Ban Depan']}',
                                 style: const TextStyle(
@@ -413,7 +422,6 @@ class _MoreDetailMotorState extends State<MoreDetailMotor> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              SizedBox(height: 5),
                               Text(
                                 '${widget.data['Ban Belakang']}',
                                 style: const TextStyle(

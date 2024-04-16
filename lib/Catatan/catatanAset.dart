@@ -1,9 +1,9 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:projek_skripsi/Catatan/Dashboards.dart';
 import 'package:projek_skripsi/komponen/kotakDialogCatatan.dart';
 import '../Aset/ControllerLogic.dart';
-import '../Dashboard.dart';
 import '../komponen/checklists.dart';
 import '../komponen/kotakBiaya.dart';
 import '../komponen/style.dart';
@@ -165,7 +165,7 @@ class _CatatanState extends State<Catatan> {
         btnCancelOnPress: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => Dashboard()),
+            MaterialPageRoute(builder: (context) => Dashboards()),
           );
         },
         btnCancelText: 'Dashboard',
@@ -179,7 +179,7 @@ class _CatatanState extends State<Catatan> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Dashboard()),
+              MaterialPageRoute(builder: (context) => Dashboards()),
             );
           },
           child: Text('Dashboard'),
@@ -232,7 +232,7 @@ class _CatatanState extends State<Catatan> {
     return Scaffold(
       backgroundColor: Warna.green,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF80C5AD),
+        backgroundColor: Warna.green,
         title: const Text(
           'Catatan Servis',
           style: TextStyle(
@@ -241,7 +241,7 @@ class _CatatanState extends State<Catatan> {
             letterSpacing: -0.5,
           ),
         ),
-        elevation: 0,
+        elevation: 1,
         centerTitle: false,
       ),
 

@@ -1,7 +1,6 @@
 import 'dart:async';
-
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
-
 import '../../Catatan/catatanAset.dart';
 import '../../komponen/style.dart';
 import '../../qrView.dart';
@@ -130,26 +129,44 @@ class _MoreDetailState extends State<MoreDetail> {
                         ),
                         child: IconButton(
                           onPressed: () {
-                            List<dynamic> kebutuhanPC =
-                            widget.data['kebutuhan'];
-                            List<String> namaKebutuhan = [];
-                            for (var kebutuhan in kebutuhanPC) {
-                              if (kebutuhan is Map<String, dynamic> &&
-                                  kebutuhan.containsKey('Kebutuhan PC')) {
-                                namaKebutuhan.add(kebutuhan['Kebutuhan PC']);
-                              }
-                            }
+                            AwesomeDialog(
+                              context: context,
+                              dialogType: DialogType.infoReverse,
+                              headerAnimationLoop: false,
+                              animType: AnimType.topSlide,
+                              showCloseIcon: true,
+                              closeIcon: const Icon(Icons.close),
+                              title: 'Peringatan',
+                              desc:
+                              'Silahkan Periksa Aset! Apa Perlu diservis?',
+                              btnOkOnPress: () {
+                                List<dynamic> kebutuhanPC = widget.data['kebutuhan'];
+                                List<String> namaKebutuhan = [];
+                                for (var kebutuhan in kebutuhanPC) {
+                                  if (kebutuhan is Map<String, dynamic> &&
+                                      kebutuhan.containsKey('Kebutuhan PC')) {
+                                    namaKebutuhan.add(kebutuhan['Kebutuhan PC']);
+                                  }
+                                }
 
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Catatan(
-                                      List_Kebutuhan: namaKebutuhan,
-                                      ID_Aset: widget.data['ID PC'],
-                                      Nama_Aset: widget.data['Merek PC'],
-                                      Jenis_Aset: widget.data['Jenis Aset'],
-                                      lokasiAset: widget.data['Ruangan'],
-                                    )));
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Catatan(
+                                          List_Kebutuhan: namaKebutuhan,
+                                          ID_Aset: widget.data['ID PC'],
+                                          Nama_Aset: widget.data['Merek PC'],
+                                          Jenis_Aset: widget.data['Jenis Aset'],
+                                          lokasiAset: widget.data['Ruangan'],
+                                        )
+                                    )
+                                );
+                              },
+                              btnCancelOnPress: () {},
+                              onDismissCallback: (type) {
+                                debugPrint('button yang ditekan $type');
+                              },
+                            ).show();
                           },
                           icon:
                           const Icon(Icons.border_color_outlined, size: 33),
@@ -250,7 +267,7 @@ class _MoreDetailState extends State<MoreDetail> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 20),
+                              const SizedBox(height: 10),
                               Text(
                                   'Merek PC',
                                   style: TextStyles.title.copyWith(
@@ -259,7 +276,6 @@ class _MoreDetailState extends State<MoreDetail> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              const SizedBox(height: 5),
                               Text(
                                 '${widget.data['Merek PC']}',
                                 style: const TextStyle(
@@ -267,7 +283,7 @@ class _MoreDetailState extends State<MoreDetail> {
                                   letterSpacing: 1,
                                 ),
                               ),
-                              const SizedBox(height: 20),
+                              const SizedBox(height: 15),
 
                               Text(
                                   'ID PC',
@@ -277,7 +293,6 @@ class _MoreDetailState extends State<MoreDetail> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              const SizedBox(height: 5),
                               Text(
                                 '${widget.data['ID PC']}',
                                 style: const TextStyle(
@@ -285,7 +300,7 @@ class _MoreDetailState extends State<MoreDetail> {
                                   letterSpacing: 1,
                                 ),
                               ),
-                              const SizedBox(height: 20),
+                              const SizedBox(height: 15),
 
                               Text(
                                   'Lokasi Ruangan',
@@ -295,7 +310,6 @@ class _MoreDetailState extends State<MoreDetail> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              const SizedBox(height: 5),
                               Text(
                                 '${widget.data['Ruangan']}',
                                 style: const TextStyle(
@@ -303,7 +317,7 @@ class _MoreDetailState extends State<MoreDetail> {
                                   letterSpacing: 1,
                                 ),
                               ),
-                              const SizedBox(height: 20),
+                              const SizedBox(height: 15),
 
                               Text(
                                   'CPU',
@@ -313,7 +327,6 @@ class _MoreDetailState extends State<MoreDetail> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              const SizedBox(height: 5),
                               Text(
                                 '${widget.data['CPU']}',
                                 style: const TextStyle(
@@ -321,7 +334,7 @@ class _MoreDetailState extends State<MoreDetail> {
                                   letterSpacing: 1,
                                 ),
                               ),
-                              const SizedBox(height: 20),
+                              const SizedBox(height: 15),
 
                               Text(
                                   'RAM',
@@ -331,7 +344,6 @@ class _MoreDetailState extends State<MoreDetail> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              const SizedBox(height: 5),
                               Text(
                                 '${widget.data['RAM']} GB',
                                 style: const TextStyle(
@@ -339,7 +351,7 @@ class _MoreDetailState extends State<MoreDetail> {
                                   letterSpacing: 1,
                                 ),
                               ),
-                              const SizedBox(height: 20),
+                              const SizedBox(height: 15),
 
                               Text(
                                   'Kapasitas Penyimpanan',
@@ -349,7 +361,6 @@ class _MoreDetailState extends State<MoreDetail> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              const SizedBox(height: 5),
                               Text(
                                 '${widget.data['Kapasitas Penyimpanan']} GB',
                                 style: const TextStyle(
@@ -357,7 +368,7 @@ class _MoreDetailState extends State<MoreDetail> {
                                   letterSpacing: 1,
                                 ),
                               ),
-                              const SizedBox(height: 20),
+                              const SizedBox(height: 15),
 
                               Text(
                                   'VGA',
@@ -367,7 +378,6 @@ class _MoreDetailState extends State<MoreDetail> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              const SizedBox(height: 5),
                               Text(
                                 '${widget.data['VGA']}',
                                 style: const TextStyle(
@@ -375,7 +385,7 @@ class _MoreDetailState extends State<MoreDetail> {
                                   letterSpacing: 1,
                                 ),
                               ),
-                              const SizedBox(height: 20),
+                              const SizedBox(height: 15),
 
                               Text(
                                   'Power Supply',
@@ -385,7 +395,6 @@ class _MoreDetailState extends State<MoreDetail> {
                                       fontWeight: FontWeight.w500
                                   )
                               ),
-                              const SizedBox(height: 5),
                               Text(
                                 '${widget.data['Kapasitas Power Supply']}W',
                                 style: const TextStyle(
@@ -393,7 +402,7 @@ class _MoreDetailState extends State<MoreDetail> {
                                   letterSpacing: 1,
                                 ),
                               ),
-                              const SizedBox(height: 20),
+                              const SizedBox(height: 10),
                             ],
                           ),
                         ),

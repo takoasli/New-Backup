@@ -2,6 +2,8 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:projek_skripsi/Aset/Mobil/DetailMobil.dart';
 
 import '../../baca data/bacaMobil.dart';
 import '../../komponen/style.dart';
@@ -168,28 +170,79 @@ class _ManajemenMobilState extends State<ManajemenMobil> {
           ),
         ],
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: Container(
-        height: 60,
-        width: 60,
-        margin: const EdgeInsets.only(bottom: 25, right: 10),
-        child: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => AddMobil()),
-            );
-          },
-          backgroundColor: Warna.green,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(40.0),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20, right: 10),
+            child: Container(
+              height: 60,
+              width: 60,
+              child: FloatingActionButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const AddMobil()),
+                  );
+                },
+                backgroundColor: Warna.green,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(40.0),
+                ),
+                child: const Icon(
+                  Icons.add,
+                  color: Warna.white,
+                ),
+              ),
+            ),
           ),
-          child: const Icon(
-            Icons.add,
-            color: Warna.white,
-            size: 30,
-          ),
-        ),
+
+          Container(
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 25, right: 10),
+              child: SpeedDial(
+                child: Icon(Icons.more_horiz,
+                    color: Warna.white),
+                backgroundColor: Warna.green,
+                activeIcon: Icons.close,
+                curve: Curves.bounceIn,
+                children: [
+                  SpeedDialChild(
+                    elevation: 0,
+                    child: const Icon(Icons.create_new_folder,
+                        color: Warna.white),
+                    labelWidget: const Text("Manage Mobil",
+                        style: TextStyle(color: Warna.green)
+                    ),
+                    backgroundColor: Warna.green,
+                    onTap: (){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const ManajemenMobil()),
+                      );
+                    },
+                  ),
+
+                  SpeedDialChild(
+                    elevation: 0,
+                    child: const Icon(Icons.car_crash,
+                        color: Warna.white),
+                    labelWidget: const Text("Detail Mobil",
+                        style: TextStyle(color: Warna.green)
+                    ),
+                    backgroundColor: Warna.green,
+                    onTap: (){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const DetailMobil()),
+                      );
+                    },
+                  )
+                ],
+              ),
+            ),
+          )
+        ],
       ),
     );
   }

@@ -1,6 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:projek_skripsi/Aset/Mobil/manajemenMobil.dart';
 import 'package:projek_skripsi/baca%20data/detail%20Baca%20Aset/DetailBacaMobil.dart';
+
+import '../../komponen/style.dart';
 
 class DetailMobil extends StatefulWidget {
   const DetailMobil({super.key});
@@ -77,8 +81,51 @@ class _DetailMobilState extends State<DetailMobil> {
             )
           )
         ],
-
         ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: SpeedDial(
+          child: const Icon(Icons.more_horiz,
+              color: Warna.white),
+          backgroundColor: Warna.green,
+          activeIcon: Icons.close,
+          curve: Curves.bounceIn,
+          children: [
+            SpeedDialChild(
+              elevation: 0,
+              child: const Icon(Icons.create_new_folder,
+                  color: Warna.white),
+              labelWidget: const Text("Manage Mobil",
+                  style: TextStyle(color: Warna.green)
+              ),
+              backgroundColor: Warna.green,
+              onTap: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ManajemenMobil()),
+                );
+              },
+            ),
+
+            SpeedDialChild(
+              elevation: 0,
+              child: const Icon(Icons.car_crash,
+                  color: Warna.white),
+              labelWidget: const Text("Detail Mobil",
+                  style: TextStyle(color: Warna.green)
+              ),
+              backgroundColor: Warna.green,
+              onTap: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const DetailMobil()),
+                );
+              },
+            )
+          ],
+        ),
+      ),
       );
   }
 }

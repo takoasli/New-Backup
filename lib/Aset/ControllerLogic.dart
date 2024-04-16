@@ -1,4 +1,3 @@
-// Hitung hari antara 2 tangal
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +29,10 @@ Color getProgressColor(int waktu) {
   var timeProgress = epochTimeToData(waktu);
   Duration difference = timeProgress.difference(DateTime.now());
   var sisaHari = difference.inDays;
-  print("Sisa Hari $sisaHari");
+
+  if (sisaHari < 0){
+    return Colors.red;
+  }
 
   if (sisaHari >= 20) {
     return Colors.green;
@@ -45,6 +47,11 @@ String getRemainingTime(int epochTime) {
   var timeProgress = epochTimeToData(epochTime);
   Duration difference = timeProgress.difference(DateTime.now());
   int days = difference.inDays;
+
+  if (days < 0){
+    return 'Waktu Habis';
+  }
+
   int months = days ~/ 30;
   int remainingDays = days % 30;
   int hours = difference.inHours % 24;
@@ -117,7 +124,7 @@ class Notif{
         'Channel ID',
         'Nama Channel',
         playSound: true,
-      importance: Importance.high
+        importance: Importance.high
     );
 
     var noti = NotificationDetails(android: androidPlatformChannelSpecifics);
@@ -154,7 +161,7 @@ Future<void> exportExcel(
   cellD1.value = TextCellValue('Catatan Servis');
   sheet.merge(CellIndex.indexByString("D1"), CellIndex.indexByString("H2"));
   cellD1.cellStyle = CellStyle(
-      backgroundColorHex: "#C6E0B4",
+      // backgroundColorHex: "#C6E0B4",
       fontSize: 12,
       verticalAlign: VerticalAlign.Center,
       horizontalAlign: HorizontalAlign.Center);
@@ -164,7 +171,7 @@ Future<void> exportExcel(
   cellA4.value = TextCellValue('No');
   sheet.merge(CellIndex.indexByString("A4"), CellIndex.indexByString("A5"));
   cellA4.cellStyle = CellStyle(
-      backgroundColorHex: "#B4C3E8",
+      // backgroundColorHex: "#B4C3E8",
       fontSize: 12,
       verticalAlign: VerticalAlign.Center,
       horizontalAlign: HorizontalAlign.Center);
@@ -174,7 +181,7 @@ Future<void> exportExcel(
   cellB4.value = TextCellValue('Tanggal Dibuat');
   sheet.merge(CellIndex.indexByString("B4"), CellIndex.indexByString("B5"));
   cellB4.cellStyle = CellStyle(
-      backgroundColorHex: "#B4C3E8",
+      // backgroundColorHex: "#B4C3E8",
       fontSize: 12,
       verticalAlign: VerticalAlign.Center,
       horizontalAlign: HorizontalAlign.Center);
@@ -184,7 +191,7 @@ Future<void> exportExcel(
   cellC4.value = TextCellValue('Nama Aset');
   sheet.merge(CellIndex.indexByString("C4"), CellIndex.indexByString("C5"));
   cellC4.cellStyle = CellStyle(
-      backgroundColorHex: "#B4C3E8",
+      // backgroundColorHex: "#B4C3E8",
       fontSize: 12,
       verticalAlign: VerticalAlign.Center,
       horizontalAlign: HorizontalAlign.Center);
@@ -194,7 +201,7 @@ Future<void> exportExcel(
   cellD4.value = TextCellValue('ID Aset');
   sheet.merge(CellIndex.indexByString("D4"), CellIndex.indexByString("D5"));
   cellD4.cellStyle = CellStyle(
-      backgroundColorHex: "#B4C3E8",
+      // backgroundColorHex: "#B4C3E8",
       fontSize: 12,
       verticalAlign: VerticalAlign.Center,
       horizontalAlign: HorizontalAlign.Center);
@@ -204,7 +211,7 @@ Future<void> exportExcel(
   cellE4.value = TextCellValue('Jenis Aset');
   sheet.merge(CellIndex.indexByString("E4"), CellIndex.indexByString("E5"));
   cellE4.cellStyle = CellStyle(
-      backgroundColorHex: "#B4C3E8",
+      // backgroundColorHex: "#B4C3E8",
       fontSize: 12,
       verticalAlign: VerticalAlign.Center,
       horizontalAlign: HorizontalAlign.Center);
@@ -214,7 +221,7 @@ Future<void> exportExcel(
   cellF4.value = TextCellValue('Lokasi Aset');
   sheet.merge(CellIndex.indexByString("F4"), CellIndex.indexByString("F5"));
   cellF4.cellStyle = CellStyle(
-      backgroundColorHex: "#B4C3E8",
+      // backgroundColorHex: "#B4C3E8",
       fontSize: 12,
       verticalAlign: VerticalAlign.Center,
       horizontalAlign: HorizontalAlign.Center);
@@ -224,7 +231,7 @@ Future<void> exportExcel(
   cellG4.value = TextCellValue('Keterangan');
   sheet.merge(CellIndex.indexByString("G4"), CellIndex.indexByString("G5"));
   cellG4.cellStyle = CellStyle(
-      backgroundColorHex: "#B4C3E8",
+      // backgroundColorHex: "#B4C3E8",
       fontSize: 12,
       verticalAlign: VerticalAlign.Center,
       horizontalAlign: HorizontalAlign.Center);
@@ -234,21 +241,21 @@ Future<void> exportExcel(
   cellH4.value = TextCellValue('Kebutuhan');
   sheet.merge(CellIndex.indexByString("H4"), CellIndex.indexByString("I4"));
   cellH4.cellStyle = CellStyle(
-      backgroundColorHex: "#B4C3E8",
+      // backgroundColorHex: "#B4C3E8",
       fontSize: 12,
       horizontalAlign: HorizontalAlign.Center);
 
   var cellH5 = sheet.cell(CellIndex.indexByString("H5"));
   cellH5.value = TextCellValue('Nama Kebutuhan');
   cellH5.cellStyle = CellStyle(
-      backgroundColorHex: "#B4C3E8",
+      // backgroundColorHex: "#B4C3E8",
       fontSize: 12,
       horizontalAlign: HorizontalAlign.Center);
 
   var cellI5 = sheet.cell(CellIndex.indexByString("I5"));
   cellI5.value = TextCellValue('Status');
   cellI5.cellStyle = CellStyle(
-      backgroundColorHex: "#B4C3E8",
+      // backgroundColorHex: "#B4C3E8",
       fontSize: 12,
       horizontalAlign: HorizontalAlign.Center);
 
@@ -257,21 +264,21 @@ Future<void> exportExcel(
   cellJ4.value = TextCellValue('Catatan Biaya');
   sheet.merge(CellIndex.indexByString("J4"), CellIndex.indexByString("K4"));
   cellJ4.cellStyle = CellStyle(
-      backgroundColorHex: "#B4C3E8",
+      // backgroundColorHex: "#B4C3E8",
       fontSize: 12,
       horizontalAlign: HorizontalAlign.Center);
 
   var cellJ5 = sheet.cell(CellIndex.indexByString("J5"));
   cellJ5.value = TextCellValue('Nama Biaya');
   cellJ5.cellStyle = CellStyle(
-      backgroundColorHex: "#B4C3E8",
+      // backgroundColorHex: "#B4C3E8",
       fontSize: 12,
       horizontalAlign: HorizontalAlign.Center);
 
   var cellK5 = sheet.cell(CellIndex.indexByString("K5"));
   cellK5.value = TextCellValue('Harga');
   cellK5.cellStyle = CellStyle(
-      backgroundColorHex: "#B4C3E8",
+      // backgroundColorHex: "#B4C3E8",
       fontSize: 12,
       horizontalAlign: HorizontalAlign.Center);
 
@@ -279,7 +286,7 @@ Future<void> exportExcel(
   cellL5.value = TextCellValue('Total');
   sheet.merge(CellIndex.indexByString("L4"), CellIndex.indexByString("L5"));
   cellL5.cellStyle = CellStyle(
-      backgroundColorHex: "#B4C3E8",
+      // backgroundColorHex: "#B4C3E8",
       fontSize: 12,
       horizontalAlign: HorizontalAlign.Center);
 
@@ -448,7 +455,3 @@ Future<void> exportExcel(
     }
   }
 }
-
-
-
-

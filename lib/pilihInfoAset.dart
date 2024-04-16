@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-import 'package:projek_skripsi/Aset/AC/AC.dart';
-import 'package:projek_skripsi/Aset/Laptop/Laptop.dart';
-import 'package:projek_skripsi/Aset/Mobil/Mobil.dart';
-import 'package:projek_skripsi/Aset/Motor/Motor.dart';
-import 'package:projek_skripsi/dashboard.dart';
-import 'package:projek_skripsi/profile.dart';
-
-import 'Aset/PC/PC.dart';
-import 'komponen/bottomNavigation.dart';
+import 'package:projek_skripsi/Aset/AC/DetailAC.dart';
+import 'package:projek_skripsi/Aset/Mobil/DetailMobil.dart';
+import 'package:projek_skripsi/Aset/Motor/DetailMotor.dart';
+import 'package:projek_skripsi/Aset/PC/DetailPC.dart';
+import 'Aset/Laptop/DetailLaptop.dart';
 import 'komponen/box.dart';
 import 'komponen/style.dart';
 
@@ -64,7 +59,7 @@ class _PilihInfoAset extends State<PilihInfoAset> {
                   halaman: () {
                       Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => AC()),
+                      MaterialPageRoute(builder: (context) => const DetailAC()),
                       );
                   },
                 ),
@@ -75,7 +70,7 @@ class _PilihInfoAset extends State<PilihInfoAset> {
                   halaman: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => PC()),
+                      MaterialPageRoute(builder: (context) => const DetailPC()),
                     );
                   },
                 ),
@@ -86,7 +81,7 @@ class _PilihInfoAset extends State<PilihInfoAset> {
                   halaman: () {
                     Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Motor()),
+                        MaterialPageRoute(builder: (context) => const DetailMotor()),
                     );
                   },
                 ),
@@ -107,7 +102,7 @@ class _PilihInfoAset extends State<PilihInfoAset> {
                       halaman: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => Mobil()),
+                          MaterialPageRoute(builder: (context) => const DetailMobil()),
                         );
                       },
                     ),
@@ -118,7 +113,7 @@ class _PilihInfoAset extends State<PilihInfoAset> {
                         halaman: (){
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => Laptop()),
+                            MaterialPageRoute(builder: (context) => const DetailLaptop()),
                           );
                         },
                         warna: Warna.green)
@@ -129,38 +124,6 @@ class _PilihInfoAset extends State<PilihInfoAset> {
           ],
         ),
         backgroundColor: Colors.white,
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: SizedBox(
-          width: 75,
-          height: 75,
-          child: FloatingActionButton(
-            onPressed: () async {
-              String barcode = await FlutterBarcodeScanner.scanBarcode(
-                "#FF0000",
-                "Cancel",
-                true,
-                ScanMode.QR,
-              );
-
-              print(barcode);
-            },
-            backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20.0),
-              side: const BorderSide(
-                color: Colors.green,
-                width: 6.0,
-                style: BorderStyle.solid,
-              ),
-            ),
-            child: Image.asset(
-              "gambar/qr_code.png",
-              height: 50,
-              width: 50,
-            ),
-          ),
-        ),
-        bottomNavigationBar: BottomNav(),
       ),
     );
   }
