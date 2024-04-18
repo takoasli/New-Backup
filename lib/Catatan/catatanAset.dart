@@ -1,5 +1,6 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:projek_skripsi/Catatan/Dashboards.dart';
 import 'package:projek_skripsi/komponen/kotakDialogCatatan.dart';
@@ -37,6 +38,7 @@ class _CatatanState extends State<Catatan> {
   late String merekAset;
   late String jenisAset;
   late String lokasi;
+  String selectedKebutuhan = "";
   List<List<dynamic>> List_Kebutuhan = [];
   List biayaKebutuhans = [];
 
@@ -312,46 +314,58 @@ class _CatatanState extends State<Catatan> {
                       ),
                     ),
                     const SizedBox(height: 15),
-                    Container(
-                      width: 350,
-                      height: 350,
-                      decoration: BoxDecoration(
-                        color: Warna.white,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: ListView.builder(
-                              itemCount: List_Kebutuhan.length,
-                              itemBuilder: (context, index) {
-                                return Checklist(
-                                  namaTask: List_Kebutuhan[index][0],
-                                  TaskKelar: List_Kebutuhan[index][1],
-                                  onChanged: (value) => checkBoxberubah(value, index),
-                                  Hapus: (context) => ApusTask(index),
-                                );
+                    Padding(
+                      padding: const EdgeInsets.only(left: 30, right: 30),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Warna.white,
+                          borderRadius: BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25),
+                          bottomRight: Radius.circular(25), bottomLeft: Radius.circular(25)),
+                        ),
+                        child: Column(
+                          children: [
+                            DropdownSearch<String>(
+                              popupProps: const PopupProps.menu(
+                                showSelectedItems: true,
+                              ),
+                              items: List_Kebutuhan.map((item) => item[0].toString()).toList(),
+                              dropdownDecoratorProps: DropDownDecoratorProps(
+                                dropdownSearchDecoration: InputDecoration(
+                                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                                    hintText: "Pilih...",
+                                  border: InputBorder.none,
+                                ),
+                              ),
+                              onChanged: (selectedValue){
+                                print(selectedValue);
+                                setState(() {
+                                  selectedKebutuhan = selectedValue ?? "";
+                                });
                               },
                             ),
-                          ),
-                          InkWell(
-                            onTap: tambahTugas,
-                            child: Container(
-                              height: 50,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              padding: const EdgeInsets.all(8),
-                              child: const Row(
-                                children: [
-                                  Icon(Icons.add),
-                                  SizedBox(width: 5),
-                                  Text('Tambah Kebutuhan Lainnya...'),
-                                ],
+
+                            Padding(
+                              padding: const EdgeInsets.only(top: 5),
+                              child: InkWell(
+                                onTap: tambahTugas,
+                                child: Container(
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  padding: const EdgeInsets.all(8),
+                                  child: const Row(
+                                    children: [
+                                      Icon(Icons.add),
+                                      SizedBox(width: 5),
+                                      Text('Tambah Kebutuhan Lainnya...'),
+                                    ],
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                     const SizedBox(height: 20),

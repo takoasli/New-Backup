@@ -177,13 +177,13 @@ class _ExportCatatanState extends State<ExportCatatan> {
                               ],
                             ),
                             child: DropdownSearch<String>(
-                              popupProps: PopupProps.menu(
+                              popupProps: const PopupProps.menu(
                                 showSelectedItems: true,
                               ),
                               items: Waktu,
                               dropdownDecoratorProps: DropDownDecoratorProps(
                                 dropdownSearchDecoration: InputDecoration(
-                                    contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                                     hintText: "Pilih...",
                                     border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(30),
