@@ -39,27 +39,6 @@ class _SettingsState extends State<Settings> {
                 height: _listTileHeight,
                 child: ListTile(
                   dense: false,
-                  title: Text('Export Aset'),
-                  subtitle: Text('Akan mengeksport Aset Yang telah dibuat'),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ExportAset()),
-                    );
-                  },
-                ),
-              ),
-            ),
-          ),
-          SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
-            child: Card(
-              elevation: 1,
-              child: Container(
-                height: _listTileHeight,
-                child: ListTile(
-                  dense: false,
                   title: Text('Export Catatan'),
                   subtitle: Text('Akan mengeksport Catatan Dalam Bentuk file Excel'),
                   onTap: () {

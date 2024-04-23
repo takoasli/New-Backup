@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -44,10 +45,8 @@ class KebutuhanModelUpdateMobil {
   }
 }
 
-enum MobilStatus { aktif, rusak, hilang }
-MobilStatus selectedStatus = MobilStatus.aktif;
-
 class _EditMobilState extends State<EditMobil> {
+  String selectedKondisi = "";
   final merekMobilController =TextEditingController();
   final idMobilCOntroller = TextEditingController();
   final tipemesinController = TextEditingController();
@@ -61,9 +60,15 @@ class _EditMobilState extends State<EditMobil> {
   final masaKebutuhanController = TextEditingController();
   final imgMobilController = TextEditingController();
   final ImagePicker _gambarMobil = ImagePicker();
+  final _formState = GlobalKey<FormState>();
   String oldphotoMobil = '';
   Map <String, dynamic> datamobil = {};
   List Kebutuhan_Mobil = [];
+  List<String> Status = [
+    "Aktif",
+    "Rusak",
+    "Hilang",
+  ];
 
   void PilihGambarMobil() async{
     final pilihMobil = await _gambarMobil.pickImage(source: ImageSource.gallery);
@@ -71,19 +76,6 @@ class _EditMobilState extends State<EditMobil> {
       setState(() {
         imgMobilController.text = pilihMobil.path;
       });
-    }
-  }
-
-  String getStatusMobil(MobilStatus status) {
-    switch (status) {
-      case MobilStatus.aktif:
-        return 'Aktif';
-      case MobilStatus.rusak:
-        return 'Rusak';
-      case MobilStatus.hilang:
-        return 'Hilang';
-      default:
-        return '';
     }
   }
 
@@ -199,6 +191,7 @@ class _EditMobilState extends State<EditMobil> {
       tipeBahanBakarController.text = data?['Jenis Bahan Bakar'] ?? '';
       pendinginController.text = data?['Sistem Pendingin Mesin'] ?? '';
       transmisController.text = data?['Tipe Transmisi'] ?? '';
+      selectedKondisi = data?['Status'] ?? '';
       kapasitasBBController.text = (data?['Kapasitas Bahan Bakar' ?? '']).toString();
       ukuranBanController.text = data?['Ukuran Ban' ?? ''];
       akiController.text = (data?['Aki' ?? '']).toString();
@@ -212,7 +205,6 @@ class _EditMobilState extends State<EditMobil> {
   Future<void> UpdateMobil(String dokMobil, Map<String, dynamic> DataMobil) async{
     try{
       String GambarMobil;
-      String status = getStatusMobil(selectedStatus);
       List<Map<String, dynamic>> ListKebutuhan_Mobil = Kebutuhan_Mobil.map((kebutuhan) {
         var timeKebutuhan = contTimeService(int.parse(kebutuhan['Masa Kebutuhan Mobil'].toString()));
         return {
@@ -249,7 +241,7 @@ class _EditMobilState extends State<EditMobil> {
           'Waktu Service Mobil': waktuKebutuhanMobil.millisecondsSinceEpoch,
           'Hari Service Mobil': daysBetween(DateTime.now(), waktuKebutuhanMobil),
           'Lokasi' : 'Parkiran',
-          'Status' : status
+          'Status' : selectedKondisi
         };
         await FirebaseFirestore.instance.collection('Mobil').doc(dokMobil).update(DataMobilBaru);
       }
@@ -303,297 +295,350 @@ class _EditMobilState extends State<EditMobil> {
           ),
           padding: const EdgeInsets.all(20),
           child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Merek Mobil',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                SizedBox(height: 10),
-
-                MyTextField(
-                    textInputType: TextInputType.text,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: merekMobilController),
-                SizedBox(height: 10),
-
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'ID Mobil',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Status',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                Column(
-                  children: [
-                    RadioListTile<MobilStatus>(
-                      title: Text('Aktif'),
-                      value: MobilStatus.aktif,
-                      groupValue: selectedStatus,
-                      onChanged: (MobilStatus? value){
-                        setState(() {
-                          selectedStatus = value ?? MobilStatus.aktif;
-                        });
-                      },
-                    ),
-                    RadioListTile<MobilStatus>(
-                      title: Text('Rusak'),
-                      value: MobilStatus.rusak,
-                      groupValue: selectedStatus,
-                      onChanged: (MobilStatus? value){
-                        setState(() {
-                          selectedStatus = value ?? MobilStatus.rusak;
-                        });
-                      },
-                    ),
-                    RadioListTile<MobilStatus>(
-                      title: Text('Hilang'),
-                      value: MobilStatus.hilang,
-                      groupValue: selectedStatus,
-                      onChanged: (MobilStatus? value){
-                        setState(() {
-                          selectedStatus = value ?? MobilStatus.hilang;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-
-                MyTextField(
-                    textInputType: TextInputType.text,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: idMobilCOntroller),
-                SizedBox(height: 10),
-
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Kapasitas Mesin(cc)',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                SizedBox(height: 10),
-
-                MyTextField(
-                    textInputType: TextInputType.number,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: tipemesinController),
-                SizedBox(height: 10),
-
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Jenis Bahan Bakar',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                SizedBox(height: 10),
-
-                MyTextField(
-                    textInputType: TextInputType.text,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: tipeBahanBakarController),
-                SizedBox(height: 10),
-
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Sistem Pendingin',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                SizedBox(height: 10),
-
-                MyTextField(
-                    textInputType: TextInputType.text,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: pendinginController),
-                SizedBox(height: 10),
-
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Tipe Transmisi',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                SizedBox(height: 10),
-
-                MyTextField(
-                    textInputType: TextInputType.text,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: transmisController),
-                SizedBox(height: 10),
-
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Kapasitas Bahan Bakar',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                SizedBox(height: 10),
-
-                MyTextField(
-                    textInputType: TextInputType.number,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: kapasitasBBController),
-                SizedBox(height: 10),
-
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Ukuran Ban',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                SizedBox(height: 10),
-
-                MyTextField(
-                    textInputType: TextInputType.text,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: ukuranBanController),
-                SizedBox(height: 10),
-
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Tipe Aki',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                SizedBox(height: 10),
-
-                MyTextField(
-                    textInputType: TextInputType.text,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: akiController),
-                SizedBox(height: 10),
-
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Gambar Mobil',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                SizedBox(height: 10),
-
-                FieldImage(
-                    controller: imgMobilController,
-                    selectedImageName: imgMobilController.text.isNotEmpty
-                        ? imgMobilController.text.split('/').last
-                        : '',
-                    onPressed: PilihGambarMobil),
-
-                SizedBox(height: 10),
-
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Kebutuhan',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: Kebutuhan_Mobil.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(Kebutuhan_Mobil[index]['Nama Kebutuhan Mobil']),
-                      subtitle: Text('${Kebutuhan_Mobil[index]['Masa Kebutuhan Mobil']} Bulan'),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () {
-                          ApusKebutuhan(index);
-                        },
-                        color: Colors.red,
-                      ),
-                    );
-                  },
-                ),
-
-
-
-                InkWell(
-                  onTap: tambahKebutuhan_Mobil,
-                  child: Container(
-                    height: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    padding: const EdgeInsets.all(8),
-                    child: const Row(
-                      children: [Icon(Icons.add),
-                        SizedBox(width: 5),
-                        Text('Tambah Kebutuhan...')],
+            child: Form(
+              key: _formState,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Merek Mobil',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
                     ),
                   ),
-                ),
-                const SizedBox(height: 30),
+                  const SizedBox(height: 5),
 
-                Align(
-                  alignment: Alignment.center,
-                  child: ElevatedButton(
-                    onPressed: (){
-                      UpdateMobil(widget.dokumenMobil, datamobil);
+                  MyTextField(
+                      textInputType: TextInputType.text,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: merekMobilController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
                     },
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Warna.green,
-                        minimumSize: const Size(300, 50),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25))
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'ID Mobil',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
                     ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.text,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: idMobilCOntroller,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Status',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  DropdownSearch<String>(
+                    popupProps: const PopupProps.menu(
+                      showSelectedItems: true,
+                    ),
+                    items: Status,
+                    dropdownDecoratorProps: DropDownDecoratorProps(
+                      dropdownSearchDecoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                          hintText: "...",
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30)
+                          )
+                      ),
+                    ),
+                    onChanged: (selectedValue){
+                      print(selectedValue);
+                      setState(() {
+                        selectedKondisi = selectedValue ?? "";
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Kapasitas Mesin(cc)',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.number,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: tipemesinController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Jenis Bahan Bakar',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.text,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: tipeBahanBakarController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Sistem Pendingin',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.text,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: pendinginController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Tipe Transmisi',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.text,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: transmisController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Kapasitas Bahan Bakar',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.number,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: kapasitasBBController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Ukuran Ban',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.text,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: ukuranBanController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Tipe Aki',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.text,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: akiController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Gambar Mobil',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  FieldImage(
+                      controller: imgMobilController,
+                      selectedImageName: imgMobilController.text.isNotEmpty
+                          ? imgMobilController.text.split('/').last
+                          : '',
+                      onPressed: PilihGambarMobil),
+
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Kebutuhan',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: Kebutuhan_Mobil.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(Kebutuhan_Mobil[index]['Nama Kebutuhan Mobil']),
+                        subtitle: Text('${Kebutuhan_Mobil[index]['Masa Kebutuhan Mobil']} Bulan'),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            ApusKebutuhan(index);
+                          },
+                          color: Colors.red,
+                        ),
+                      );
+                    },
+                  ),
+
+
+                  InkWell(
+                    onTap: tambahKebutuhan_Mobil,
                     child: Container(
-                      width: 200,
-                      child: Center(
-                        child: Text(
-                          'Save',
-                          style: TextStyles.title
-                              .copyWith(fontSize: 20, color: Colors.white),
+                      height: 50,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      padding: const EdgeInsets.all(8),
+                      child: const Row(
+                        children: [Icon(Icons.add),
+                          SizedBox(width: 5),
+                          Text('Tambah Kebutuhan...')],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+
+                  Align(
+                    alignment: Alignment.center,
+                    child: ElevatedButton(
+                      onPressed: (){
+                        if(_formState.currentState!.validate()){
+                          UpdateMobil(widget.dokumenMobil, datamobil);
+                          print("validate suxxes");
+
+                        }else{
+
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Warna.green,
+                          minimumSize: const Size(300, 50),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25))
+                      ),
+                      child: SizedBox(
+                        width: 200,
+                        child: Center(
+                          child: Text(
+                            'Save',
+                            style: TextStyles.title
+                                .copyWith(fontSize: 20, color: Colors.white),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                )
-              ],
+                  )
+                ],
+              ),
             ),
           ),
         ),

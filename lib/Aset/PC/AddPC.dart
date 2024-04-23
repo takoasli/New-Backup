@@ -41,7 +41,9 @@ enum PCStatus { aktif, rusak, hilang }
 PCStatus selectedStatus = PCStatus.aktif;
 
 class _AddPCState extends State<AddPC> {
+  String selectedKondisi = "";
   String selectedRuangan = "";
+  final _formState = GlobalKey<FormState>();
   final merekPCController = TextEditingController();
   final IdPCController = TextEditingController();
   final CPUController = TextEditingController();
@@ -75,6 +77,12 @@ class _AddPCState extends State<AddPC> {
     "MANAGER EKSPORT"
   ];
 
+  List<String> Status = [
+    "Aktif",
+    "Rusak",
+    "Hilang",
+  ];
+
 
   void PilihGambarPC() async{
     final pilihPC = await _gambarPC.pickImage(source: ImageSource.gallery);
@@ -88,19 +96,6 @@ class _AddPCState extends State<AddPC> {
   int generateRandomId() {
     Random random = Random();
     return random.nextInt(400) + 1;
-  }
-
-  String getStatusPC(PCStatus status) {
-    switch (status) {
-      case PCStatus.aktif:
-        return 'Aktif';
-      case PCStatus.rusak:
-        return 'Rusak';
-      case PCStatus.hilang:
-        return 'Hilang';
-      default:
-        return '';
-    }
   }
 
   void SimpanKebutuhan_PC() async {
@@ -201,7 +196,6 @@ class _AddPCState extends State<AddPC> {
     try {
       String lokasiGambarPC = ImgPCController.text;
       String fotoPC = '';
-      String status = getStatusPC(selectedStatus);
       List<Map<String, dynamic>> listKebutuhan = Kebutuhan.map((kebutuhan) {
         var timeKebutuhan = contTimeService(kebutuhan.masaKebutuhan);
         return {
@@ -225,6 +219,7 @@ class _AddPCState extends State<AddPC> {
           merekPCController.text.trim(),
           IdPCController.text.trim(),
           selectedRuangan,
+          selectedKondisi,
           CPUController.text.trim(),
           int.parse(RamController.text.trim()),
           int.parse(StorageController.text.trim()),
@@ -232,7 +227,6 @@ class _AddPCState extends State<AddPC> {
           int.parse(PSUController.text.trim()),
           listKebutuhan,
           fotoPC,
-          status
         );
 
       AwesomeDialog(
@@ -256,9 +250,9 @@ class _AddPCState extends State<AddPC> {
     }
   }
 
-  Future tambahPC (String merek, String ID, String selectedRuangan,
+  Future tambahPC (String merek, String ID, String selectedRuangan, String selectedKondisi,
       String CPU, int ram, int storage, String vga, int psu, List<Map<String, dynamic>> kebutuhan, String gambarPC,
-      String status) async{
+      ) async{
       await FirebaseFirestore.instance.collection('PC').add({
         'Merek PC' : merek,
         'ID PC' : ID,
@@ -271,7 +265,7 @@ class _AddPCState extends State<AddPC> {
         'kebutuhan' : kebutuhan,
         'Gambar PC' : gambarPC,
         'Jenis Aset' : 'PC',
-        'Status' : status
+        'Status' : selectedKondisi
       });
   }
 
@@ -302,275 +296,336 @@ class _AddPCState extends State<AddPC> {
           ),
           padding: const EdgeInsets.all(20),
           child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Merek PC',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                SizedBox(height: 10),
-                MyTextField(
-                    textInputType: TextInputType.text,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: merekPCController),
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'ID PC',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                MyTextField(
-                    textInputType: TextInputType.text,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: IdPCController),
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Status',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                Column(
-                  children: [
-                    RadioListTile<PCStatus>(
-                      title: Text('Aktif'),
-                      value: PCStatus.aktif,
-                      groupValue: selectedStatus,
-                      onChanged: (PCStatus? value){
-                        setState(() {
-                          selectedStatus = value ?? PCStatus.aktif;
-                        });
-                      },
-                    ),
-                    RadioListTile<PCStatus>(
-                      title: Text('Rusak'),
-                      value: PCStatus.rusak,
-                      groupValue: selectedStatus,
-                      onChanged: (PCStatus? value){
-                        setState(() {
-                          selectedStatus = value ?? PCStatus.rusak;
-                        });
-                      },
-                    ),
-                    RadioListTile<PCStatus>(
-                      title: Text('Hilang'),
-                      value: PCStatus.hilang,
-                      groupValue: selectedStatus,
-                      onChanged: (PCStatus? value){
-                        setState(() {
-                          selectedStatus = value ?? PCStatus.hilang;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Ruangan',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                SizedBox(height: 10),
-                DropdownSearch<String>(
-                  popupProps: PopupProps.menu(
-                    showSelectedItems: true,
-                  ),
-                  items: Ruangan,
-                  dropdownDecoratorProps: DropDownDecoratorProps(
-                    dropdownSearchDecoration: InputDecoration(
-                        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                        hintText: "Pilih Ruangan...",
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30)
-                        )
+            child: Form(
+              key: _formState,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Merek PC',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
                     ),
                   ),
-                  onChanged: (selectedValue){
-                    print(selectedValue);
-                    setState(() {
-                      selectedRuangan = selectedValue ?? "";
-                    });
-                  },
-                ),
-                const SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'CPU',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                SizedBox(height: 10),
-                MyTextField(
-                    textInputType: TextInputType.text,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: CPUController),
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'RAM (GB)',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                SizedBox(height: 10),
-                MyTextField(
-                    textInputType: TextInputType.number,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: RamController),
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Storage (GB)',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                SizedBox(height: 10),
-                MyTextField(
-                    textInputType: TextInputType.number,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: StorageController),
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'VGA',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                SizedBox(height: 10),
-                MyTextField(
-                    textInputType: TextInputType.text,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: VGAController),
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Kapasitas PSU (watt)',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                SizedBox(height: 10),
-                MyTextField(
-                    textInputType: TextInputType.number,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: PSUController),
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Gambar PC',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                SizedBox(height: 10),
-                FieldImage(
-                    controller: ImgPCController,
-                    selectedImageName: ImgPCController.text.isNotEmpty
-                        ? ImgPCController.text.split('/').last
-                        : '',
-                    onPressed: PilihGambarPC),
-                const SizedBox(height: 10),
+                  SizedBox(height: 5),
 
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Kebutuhan',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
+                  MyTextField(
+                      textInputType: TextInputType.text,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: merekPCController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
                   ),
-                ),
+                  SizedBox(height: 25),
 
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: Kebutuhan.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(Kebutuhan[index].namaKebutuhan),
-                      subtitle: Text('${Kebutuhan[index].masaKebutuhan} Bulan'),
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {
-                          ApusKebutuhan(index); // Fungsi apus kebutuhan
-                        },
-                        color: Colors.red,
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'ID PC',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.text,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: IdPCController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Status',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  DropdownSearch<String>(
+                    popupProps: PopupProps.menu(
+                      showSelectedItems: true,
+                    ),
+                    items: Status,
+                    dropdownDecoratorProps: DropDownDecoratorProps(
+                      dropdownSearchDecoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                          hintText: "...",
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30)
+                          )
                       ),
-                    );
-                  },
-                ),
-
-
-
-                InkWell(
-                  onTap: tambahKebutuhan,
-                  child: Container(
-                    height: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
                     ),
-                    padding: EdgeInsets.all(8),
-                    child: Row(
-                      children: [Icon(Icons.add),
-                      SizedBox(width: 5),
-                      Text('Tambah Kebutuhan...')],
+                    onChanged: (selectedValue){
+                      print(selectedValue);
+                      setState(() {
+                        selectedKondisi = selectedValue ?? "";
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Ruangan',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
                     ),
                   ),
-                ),
+                  const SizedBox(height: 5),
 
-                SizedBox(height: 30),
+                  DropdownSearch<String>(
+                    popupProps: PopupProps.menu(
+                      showSelectedItems: true,
+                    ),
+                    items: Ruangan,
+                    dropdownDecoratorProps: DropDownDecoratorProps(
+                      dropdownSearchDecoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                          hintText: "...",
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30)
+                          )
+                      ),
+                    ),
+                    onChanged: (selectedValue){
+                      print(selectedValue);
+                      setState(() {
+                        selectedRuangan = selectedValue ?? "";
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 25),
 
-                Align(
-                  alignment: Alignment.center,
-                  child: ElevatedButton(
-                    onPressed: SimpanPC,
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Warna.green,
-                        minimumSize: const Size(300, 50),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25))),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'CPU',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.text,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: CPUController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'RAM (GB)',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.number,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: RamController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Storage (GB)',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.number,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: StorageController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'VGA',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.text,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: VGAController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Kapasitas PSU (watt)',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.number,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: PSUController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Gambar PC',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  FieldImage(
+                      controller: ImgPCController,
+                      selectedImageName: ImgPCController.text.isNotEmpty
+                          ? ImgPCController.text.split('/').last
+                          : '',
+                      onPressed: PilihGambarPC),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Kebutuhan',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: Kebutuhan.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(Kebutuhan[index].namaKebutuhan),
+                        subtitle: Text('${Kebutuhan[index].masaKebutuhan} Bulan'),
+                        trailing: IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () {
+                            ApusKebutuhan(index); // Fungsi apus kebutuhan
+                          },
+                          color: Colors.red,
+                        ),
+                      );
+                    },
+                  ),
+
+
+                  InkWell(
+                    onTap: tambahKebutuhan,
                     child: Container(
-                      width: 200,
-                      child: Center(
-                        child: Text(
-                          'Save',
-                          style: TextStyles.title
-                              .copyWith(fontSize: 20, color: Colors.white),
+                      height: 50,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      padding: EdgeInsets.all(8),
+                      child: Row(
+                        children: [Icon(Icons.add),
+                        SizedBox(width: 5),
+                        Text('Tambah Kebutuhan...')],
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: 30),
+
+                  Align(
+                    alignment: Alignment.center,
+                    child: ElevatedButton(
+                      onPressed: (){
+                        if(_formState.currentState!.validate()){
+                          SimpanPC();
+                          print("validate suxxes");
+
+                        }else{
+
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Warna.green,
+                          minimumSize: const Size(300, 50),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25))),
+                      child: Container(
+                        width: 200,
+                        child: Center(
+                          child: Text(
+                            'Save',
+                            style: TextStyles.title
+                                .copyWith(fontSize: 20, color: Colors.white),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

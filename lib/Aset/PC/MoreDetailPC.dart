@@ -74,20 +74,23 @@ class _MoreDetailState extends State<MoreDetail> {
                 alignment: Alignment.topCenter,
                 children: [
                   Positioned(
-                    child: Container(
-                      width: 150,
-                      height: 150,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: imageUrl.isNotEmpty
-                          ? Image.network(
-                        imageUrl,
-                        fit: BoxFit.contain,
-                      )
-                          : Image.asset(
-                        'gambar/pc.png',
-                        fit: BoxFit.contain,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: Container(
+                        width: 150,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: imageUrl.isNotEmpty
+                            ? Image.network(
+                          imageUrl,
+                          fit: BoxFit.contain,
+                        )
+                            : Image.asset(
+                          'gambar/pc.png',
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     ),
                   ),
@@ -175,235 +178,255 @@ class _MoreDetailState extends State<MoreDetail> {
                   ),
                   Positioned(
                     top: 170,
-                    child: Container(
-                      width: 320,
-                      height: 380,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                  'Kebutuhan Servis',
-                                  style: TextStyles.title.copyWith(
-                                      fontSize: 18,
-                                      color: Warna.darkgrey,
-                                      fontWeight: FontWeight.w500
-                                  )
-                              ),
-                              const SizedBox(height: 5),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount: widget.data['kebutuhan'].length,
-                                    itemBuilder: (context, index) {
-                                      final kebutuhan = widget.data['kebutuhan']
-                                      [index]['Kebutuhan PC'];
-                                      ['Masa Kebutuhan'];
-                                      final hariKebutuhan =
-                                      widget.data['kebutuhan'][index]
-                                      ['Hari Kebutuhan PC'];
-                                      final waktuKebutuhan =
-                                      widget.data['kebutuhan'][index]
-                                      ['Waktu Kebutuhan PC'];
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: Container(
+                        width: 320,
+                        height: 360,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: SingleChildScrollView(
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                    'Kebutuhan Servis',
+                                    style: TextStyles.title.copyWith(
+                                        fontSize: 18,
+                                        color: Warna.darkgrey,
+                                        fontWeight: FontWeight.w500
+                                    )
+                                ),
+                                const SizedBox(height: 5),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    ListView.builder(
+                                      shrinkWrap: true,
+                                      itemCount: widget.data['kebutuhan'].length,
+                                      itemBuilder: (context, index) {
+                                        final kebutuhan = widget.data['kebutuhan']
+                                        [index]['Kebutuhan PC'];
+                                        ['Masa Kebutuhan'];
+                                        final hariKebutuhan =
+                                        widget.data['kebutuhan'][index]
+                                        ['Hari Kebutuhan PC'];
+                                        final waktuKebutuhan =
+                                        widget.data['kebutuhan'][index]
+                                        ['Waktu Kebutuhan PC'];
 
-                                      final part = kebutuhan.split(': ');
-                                      final hasSplit =
-                                      part.length > 1 ? part[1] : kebutuhan;
+                                        final part = kebutuhan.split(': ');
+                                        final hasSplit =
+                                        part.length > 1 ? part[1] : kebutuhan;
 
-                                      return SizedBox(
-                                        height: 80,
-                                        child: ListTile(
-                                          dense: true,
-                                          contentPadding: EdgeInsets.symmetric(
-                                              horizontal: 8),
-                                          title: Text(
-                                            '- $hasSplit',
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              letterSpacing: 1,
+                                        return SizedBox(
+                                          height: 80,
+                                          child: ListTile(
+                                            dense: true,
+                                            contentPadding: EdgeInsets.symmetric(
+                                                horizontal: 8),
+                                            title: Text(
+                                              '- $hasSplit',
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                                letterSpacing: 1,
+                                              ),
+                                            ),
+                                            subtitle: Column(
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                              children: [
+                                                showIndicator(
+                                                  getValueIndicator(
+                                                      hariKebutuhan,
+                                                      epochTimeToData(
+                                                          waktuKebutuhan)),
+                                                  getProgressColor(
+                                                      waktuKebutuhan),
+                                                ),
+                                                const SizedBox(height: 5),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                                  children: [
+                                                    Text(
+                                                      overflow:
+                                                      TextOverflow.ellipsis,
+                                                      getRemainingTime(
+                                                          waktuKebutuhan),
+                                                      style: const TextStyle(
+                                                        fontSize: 13,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
                                             ),
                                           ),
-                                          subtitle: Column(
-                                            crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                            children: [
-                                              showIndicator(
-                                                getValueIndicator(
-                                                    hariKebutuhan,
-                                                    epochTimeToData(
-                                                        waktuKebutuhan)),
-                                                getProgressColor(
-                                                    waktuKebutuhan),
-                                              ),
-                                              const SizedBox(height: 5),
-                                              Row(
-                                                mainAxisAlignment:
-                                                MainAxisAlignment.end,
-                                                children: [
-                                                  Text(
-                                                    overflow:
-                                                    TextOverflow.ellipsis,
-                                                    getRemainingTime(
-                                                        waktuKebutuhan),
-                                                    style: const TextStyle(
-                                                      fontSize: 13,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    },
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                    'Merek PC',
+                                    style: TextStyles.title.copyWith(
+                                        fontSize: 18,
+                                        color: Warna.darkgrey,
+                                        fontWeight: FontWeight.w500
+                                    )
+                                ),
+                                Text(
+                                  '${widget.data['Merek PC']}',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    letterSpacing: 1,
                                   ),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              Text(
-                                  'Merek PC',
-                                  style: TextStyles.title.copyWith(
-                                      fontSize: 18,
-                                      color: Warna.darkgrey,
-                                      fontWeight: FontWeight.w500
-                                  )
-                              ),
-                              Text(
-                                '${widget.data['Merek PC']}',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  letterSpacing: 1,
                                 ),
-                              ),
-                              const SizedBox(height: 15),
+                                const SizedBox(height: 15),
 
-                              Text(
-                                  'ID PC',
-                                  style: TextStyles.title.copyWith(
-                                      fontSize: 18,
-                                      color: Warna.darkgrey,
-                                      fontWeight: FontWeight.w500
-                                  )
-                              ),
-                              Text(
-                                '${widget.data['ID PC']}',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  letterSpacing: 1,
+                                Text(
+                                    'Status',
+                                    style: TextStyles.title.copyWith(
+                                        fontSize: 18,
+                                        color: Warna.darkgrey,
+                                        fontWeight: FontWeight.w500
+                                    )
                                 ),
-                              ),
-                              const SizedBox(height: 15),
+                                Text(
+                                  '${widget.data['Status']}',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    letterSpacing: 1,
+                                  ),
+                                ),
+                                const SizedBox(height: 15),
 
-                              Text(
-                                  'Lokasi Ruangan',
-                                  style: TextStyles.title.copyWith(
-                                      fontSize: 18,
-                                      color: Warna.darkgrey,
-                                      fontWeight: FontWeight.w500
-                                  )
-                              ),
-                              Text(
-                                '${widget.data['Ruangan']}',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  letterSpacing: 1,
+                                Text(
+                                    'ID PC',
+                                    style: TextStyles.title.copyWith(
+                                        fontSize: 18,
+                                        color: Warna.darkgrey,
+                                        fontWeight: FontWeight.w500
+                                    )
                                 ),
-                              ),
-                              const SizedBox(height: 15),
+                                Text(
+                                  '${widget.data['ID PC']}',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    letterSpacing: 1,
+                                  ),
+                                ),
+                                const SizedBox(height: 15),
 
-                              Text(
-                                  'CPU',
-                                  style: TextStyles.title.copyWith(
-                                      fontSize: 18,
-                                      color: Warna.darkgrey,
-                                      fontWeight: FontWeight.w500
-                                  )
-                              ),
-                              Text(
-                                '${widget.data['CPU']}',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  letterSpacing: 1,
+                                Text(
+                                    'Lokasi Ruangan',
+                                    style: TextStyles.title.copyWith(
+                                        fontSize: 18,
+                                        color: Warna.darkgrey,
+                                        fontWeight: FontWeight.w500
+                                    )
                                 ),
-                              ),
-                              const SizedBox(height: 15),
+                                Text(
+                                  '${widget.data['Ruangan']}',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    letterSpacing: 1,
+                                  ),
+                                ),
+                                const SizedBox(height: 15),
 
-                              Text(
-                                  'RAM',
-                                  style: TextStyles.title.copyWith(
-                                      fontSize: 18,
-                                      color: Warna.darkgrey,
-                                      fontWeight: FontWeight.w500
-                                  )
-                              ),
-                              Text(
-                                '${widget.data['RAM']} GB',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  letterSpacing: 1,
+                                Text(
+                                    'CPU',
+                                    style: TextStyles.title.copyWith(
+                                        fontSize: 18,
+                                        color: Warna.darkgrey,
+                                        fontWeight: FontWeight.w500
+                                    )
                                 ),
-                              ),
-                              const SizedBox(height: 15),
+                                Text(
+                                  '${widget.data['CPU']}',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    letterSpacing: 1,
+                                  ),
+                                ),
+                                const SizedBox(height: 15),
 
-                              Text(
-                                  'Kapasitas Penyimpanan',
-                                  style: TextStyles.title.copyWith(
-                                      fontSize: 18,
-                                      color: Warna.darkgrey,
-                                      fontWeight: FontWeight.w500
-                                  )
-                              ),
-                              Text(
-                                '${widget.data['Kapasitas Penyimpanan']} GB',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  letterSpacing: 1,
+                                Text(
+                                    'RAM',
+                                    style: TextStyles.title.copyWith(
+                                        fontSize: 18,
+                                        color: Warna.darkgrey,
+                                        fontWeight: FontWeight.w500
+                                    )
                                 ),
-                              ),
-                              const SizedBox(height: 15),
+                                Text(
+                                  '${widget.data['RAM']} GB',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    letterSpacing: 1,
+                                  ),
+                                ),
+                                const SizedBox(height: 15),
 
-                              Text(
-                                  'VGA',
-                                  style: TextStyles.title.copyWith(
-                                      fontSize: 18,
-                                      color: Warna.darkgrey,
-                                      fontWeight: FontWeight.w500
-                                  )
-                              ),
-                              Text(
-                                '${widget.data['VGA']}',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  letterSpacing: 1,
+                                Text(
+                                    'Kapasitas Penyimpanan',
+                                    style: TextStyles.title.copyWith(
+                                        fontSize: 18,
+                                        color: Warna.darkgrey,
+                                        fontWeight: FontWeight.w500
+                                    )
                                 ),
-                              ),
-                              const SizedBox(height: 15),
+                                Text(
+                                  '${widget.data['Kapasitas Penyimpanan']} GB',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    letterSpacing: 1,
+                                  ),
+                                ),
+                                const SizedBox(height: 15),
 
-                              Text(
-                                  'Power Supply',
-                                  style: TextStyles.title.copyWith(
-                                      fontSize: 18,
-                                      color: Warna.darkgrey,
-                                      fontWeight: FontWeight.w500
-                                  )
-                              ),
-                              Text(
-                                '${widget.data['Kapasitas Power Supply']}W',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  letterSpacing: 1,
+                                Text(
+                                    'VGA',
+                                    style: TextStyles.title.copyWith(
+                                        fontSize: 18,
+                                        color: Warna.darkgrey,
+                                        fontWeight: FontWeight.w500
+                                    )
                                 ),
-                              ),
-                              const SizedBox(height: 10),
-                            ],
+                                Text(
+                                  '${widget.data['VGA']}',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    letterSpacing: 1,
+                                  ),
+                                ),
+                                const SizedBox(height: 15),
+
+                                Text(
+                                    'Power Supply',
+                                    style: TextStyles.title.copyWith(
+                                        fontSize: 18,
+                                        color: Warna.darkgrey,
+                                        fontWeight: FontWeight.w500
+                                    )
+                                ),
+                                Text(
+                                  '${widget.data['Kapasitas Power Supply']}W',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    letterSpacing: 1,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                              ],
+                            ),
                           ),
                         ),
                       ),

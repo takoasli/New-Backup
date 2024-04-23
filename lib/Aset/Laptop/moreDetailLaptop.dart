@@ -286,6 +286,24 @@ class _MoreDetailLaptopState extends State<MoreDetailLaptop> {
                               const SizedBox(height: 15),
 
                               Text(
+                                  'Merek Laptop',
+                                  style: TextStyles.title.copyWith(
+                                      fontSize: 18,
+                                      color: Warna.darkgrey,
+                                      fontWeight: FontWeight.w500
+                                  )
+                              ),
+                              Text(
+                                '${widget.data['Status']}',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  letterSpacing: 1,
+                                ),
+                              ),
+                              const SizedBox(height: 15),
+
+
+                              Text(
                                   'ID laptop',
                                   style: TextStyles.title.copyWith(
                                       fontSize: 18,

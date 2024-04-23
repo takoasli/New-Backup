@@ -39,6 +39,7 @@ LaptopStatus selectedStatus = LaptopStatus.aktif;
 
 class _AddLaptopState extends State<AddLaptop> {
   String selectedRuangan = "";
+  String selectedKondisi = "";
   final merekLaptopController = TextEditingController();
   final IdLaptopController = TextEditingController();
   final CPUController = TextEditingController();
@@ -48,6 +49,7 @@ class _AddLaptopState extends State<AddLaptop> {
   final StorageController = TextEditingController();
   final isiKebutuhan_Laptop = TextEditingController();
   final MonitorController = TextEditingController();
+  final _formState = GlobalKey<FormState>();
   final MasaKebutuhanController = TextEditingController();
   final ImagePicker _gambarLaptop = ImagePicker();
   List Kebutuhan_Laptop = [
@@ -71,6 +73,12 @@ class _AddLaptopState extends State<AddLaptop> {
     "STUDIO",
     "TELE SALES",
     "MANAGER EKSPORT"
+  ];
+
+  List<String> Status = [
+    "Aktif",
+    "Rusak",
+    "Hilang",
   ];
 
 
@@ -102,19 +110,6 @@ class _AddLaptopState extends State<AddLaptop> {
     } catch (e) {
       print('$e');
       return '';
-    }
-  }
-
-  String getStatusLaptop(LaptopStatus status) {
-    switch (status) {
-      case LaptopStatus.aktif:
-        return 'Aktif';
-      case LaptopStatus.rusak:
-        return 'Rusak';
-      case LaptopStatus.hilang:
-        return 'Hilang';
-      default:
-        return '';
     }
   }
 
@@ -158,7 +153,6 @@ class _AddLaptopState extends State<AddLaptop> {
       }
     } else {
       print('Input Masa Kebutuhan tidak boleh kosong');
-      // Tindakan jika input kosong
     }
   }
 
@@ -201,7 +195,7 @@ class _AddLaptopState extends State<AddLaptop> {
     try{
       String lokasiGambarPC = ImglaptopController.text;
       String fotoLaptop = '';
-      String status = getStatusLaptop(selectedStatus);
+      // String status = getStatusLaptop(selectedStatus);
       List<Map<String, dynamic>> ListKebutuhan_Laptop = Kebutuhan_Laptop.map((kebutuhan) {
         var timeKebutuhan = contTimeService(kebutuhan.masaKebutuhanLaptop);
         return {
@@ -223,6 +217,7 @@ class _AddLaptopState extends State<AddLaptop> {
         merekLaptopController.text.trim(),
         IdLaptopController.text.trim(),
         selectedRuangan,
+        selectedKondisi,
         CPUController.text.trim(),
         int.parse(RamController.text.trim()),
         int.parse(StorageController.text.trim()),
@@ -230,7 +225,6 @@ class _AddLaptopState extends State<AddLaptop> {
         MonitorController.text.trim(),
         ListKebutuhan_Laptop,
         fotoLaptop,
-        status
       );
 
       AwesomeDialog(
@@ -254,9 +248,9 @@ class _AddLaptopState extends State<AddLaptop> {
     }
   }
 
-  Future tambahLaptop (String merek, String ID, String selectedRuangan,
+  Future tambahLaptop (String merek, String ID, String selectedRuangan,selectedKondisi,
       String CPU, int ram, int storage, String vga, String monitor,List<Map<String, dynamic>> kebutuhan, String gambarLaptop,
-      String status) async{
+      ) async{
     await FirebaseFirestore.instance.collection('Laptop').add({
       'Merek Laptop' : merek,
       'ID Laptop' : ID,
@@ -269,7 +263,7 @@ class _AddLaptopState extends State<AddLaptop> {
       'Kebutuhan Laptop' : kebutuhan,
       'Gambar Laptop' : gambarLaptop,
       'Jenis Aset' : 'Laptop',
-      'Status' : status,
+      'Status' : selectedKondisi,
 
     });
   }
@@ -301,278 +295,322 @@ class _AddLaptopState extends State<AddLaptop> {
           ),
           padding: const EdgeInsets.all(20),
           child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Merek Laptop',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
+            child: Form(
+              key: _formState,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Merek Laptop',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 10),
+                  const SizedBox(height: 5),
 
-                MyTextField(
-                    textInputType: TextInputType.text,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: merekLaptopController),
-                const SizedBox(height: 10),
-
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'ID Laptop',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                MyTextField(
-                    textInputType: TextInputType.text,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: IdLaptopController),
-                const SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Status',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                Column(
-                  children: [
-                    RadioListTile<LaptopStatus>(
-                      title: Text('Aktif'),
-                      value: LaptopStatus.aktif,
-                      groupValue: selectedStatus,
-                      onChanged: (LaptopStatus? value){
-                        setState(() {
-                          selectedStatus = value ?? LaptopStatus.aktif;
-                        });
+                  MyTextField(
+                      textInputType: TextInputType.text,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: merekLaptopController,
+                      validator: (value){
+                        if (value==''){
+                          return "Isi kosong, Harap Diisi!";
+                        }
                       },
-                    ),
-                    RadioListTile<LaptopStatus>(
-                      title: Text('Rusak'),
-                      value: LaptopStatus.rusak,
-                      groupValue: selectedStatus,
-                      onChanged: (LaptopStatus? value){
-                        setState(() {
-                          selectedStatus = value ?? LaptopStatus.rusak;
-                        });
-                      },
-                    ),
-                    RadioListTile<LaptopStatus>(
-                      title: Text('Hilang'),
-                      value: LaptopStatus.hilang,
-                      groupValue: selectedStatus,
-                      onChanged: (LaptopStatus? value){
-                        setState(() {
-                          selectedStatus = value ?? LaptopStatus.hilang;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Ruangan',
-                    style: TextStyles.title.copyWith(fontSize: 15, color: Warna.darkgrey),
                   ),
-                ),
-                const SizedBox(height: 10),
+                  const SizedBox(height: 25),
 
-                DropdownSearch<String>(
-                  popupProps: PopupProps.menu(
-                    showSelectedItems: true,
-                  ),
-                  items: Ruangan,
-                  dropdownDecoratorProps: DropDownDecoratorProps(
-                    dropdownSearchDecoration: InputDecoration(
-                      contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                      hintText: "Pilih Ruangan...",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30)
-                      )
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'ID Laptop',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
                     ),
                   ),
-                  onChanged: (selectedValue){
-                    print(selectedValue);
-                    setState(() {
-                      selectedRuangan = selectedValue ?? "";
-                    });
-                  },
-                ),
-                const SizedBox(height: 10),
-
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'CPU',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
+                  const SizedBox(height: 5),
+                  MyTextField(
+                      textInputType: TextInputType.text,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: IdLaptopController,
+                      validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
                   ),
-                ),
-                const SizedBox(height: 10),
+                  const SizedBox(height: 25),
 
-                MyTextField(
-                    textInputType: TextInputType.text,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: CPUController),
-                const SizedBox(height: 10),
-
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'RAM (GB)',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Status',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 10),
+                  const SizedBox(height: 5),
 
-                MyTextField(
-                    textInputType: TextInputType.number,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: RamController),
-                const SizedBox(height: 10),
-
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Storage (GB)',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                const SizedBox(height: 10),
-
-                MyTextField(
-                    textInputType: TextInputType.number,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: StorageController),
-                const SizedBox(height: 10),
-
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'VGA',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                const SizedBox(height: 10),
-
-                MyTextField(
-                    textInputType: TextInputType.text,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: VGAController),
-                const SizedBox(height: 10),
-
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Ukuran Layar (inch)',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                const SizedBox(height: 10),
-
-                MyTextField(
-                    textInputType: TextInputType.number,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: MonitorController),
-                const SizedBox(height: 10),
-
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Gambar Laptop',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                const SizedBox(height: 10),
-
-                FieldImage(
-                    controller: ImglaptopController,
-                    selectedImageName: ImglaptopController.text.isNotEmpty
-                        ? ImglaptopController.text.split('/').last
-                        : '',
-                    onPressed: PilihGambarLaptop),
-                const SizedBox(height: 10),
-
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: Kebutuhan_Laptop.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(Kebutuhan_Laptop[index].namaKebutuhanLaptop),
-                      subtitle: Text('${Kebutuhan_Laptop[index].masaKebutuhanLaptop} Bulan'),
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {
-                          ApusKebutuhan(index);
-                        },
-                        color: Colors.red,
+                  DropdownSearch<String>(
+                    popupProps: PopupProps.menu(
+                      showSelectedItems: true,
+                    ),
+                    items: Status,
+                    dropdownDecoratorProps: DropDownDecoratorProps(
+                      dropdownSearchDecoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                          hintText: "...",
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30)
+                          )
                       ),
-                    );
-                  },
-                ),
-
-
-                InkWell(
-                  onTap: tambahKebutuhan_Laptop,
-                  child: Container(
-                    height: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
                     ),
-                    padding: const EdgeInsets.all(8),
-                    child: const Row(
-                      children: [Icon(Icons.add),
-                        SizedBox(width: 5),
-                        Text('Tambah Kebutuhan...')],
+                    onChanged: (selectedValue){
+                      print(selectedValue);
+                      setState(() {
+                        selectedKondisi = selectedValue ?? "";
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Ruangan',
+                      style: TextStyles.title.copyWith(fontSize: 15, color: Warna.darkgrey),
                     ),
                   ),
-                ),
-                const SizedBox(height: 30),
-                Align(
-                  alignment: Alignment.center,
-                  child: ElevatedButton(
-                    onPressed: SimpanLaptop,
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Warna.green,
-                        minimumSize: const Size(300, 50),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25))),
+                  const SizedBox(height: 5),
+
+                  DropdownSearch<String>(
+                    popupProps: PopupProps.menu(
+                      showSelectedItems: true,
+                    ),
+                    items: Ruangan,
+                    dropdownDecoratorProps: DropDownDecoratorProps(
+                      dropdownSearchDecoration: InputDecoration(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                        hintText: "...",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30)
+                        )
+                      ),
+                    ),
+                    onChanged: (selectedValue){
+                      print(selectedValue);
+                      setState(() {
+                        selectedRuangan = selectedValue ?? "";
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'CPU',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.text,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: CPUController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'RAM (GB)',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.number,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: RamController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Storage (GB)',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.number,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: StorageController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'VGA',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.text,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: VGAController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Ukuran Layar (inch)',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.number,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: MonitorController,
+                      validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Gambar Laptop',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  FieldImage(
+                      controller: ImglaptopController,
+                      selectedImageName: ImglaptopController.text.isNotEmpty
+                          ? ImglaptopController.text.split('/').last
+                          : '',
+                      onPressed: PilihGambarLaptop),
+                  const SizedBox(height: 25),
+
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: Kebutuhan_Laptop.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(Kebutuhan_Laptop[index].namaKebutuhanLaptop),
+                        subtitle: Text('${Kebutuhan_Laptop[index].masaKebutuhanLaptop} Bulan'),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            ApusKebutuhan(index);
+                          },
+                          color: Colors.red,
+                        ),
+                      );
+                    },
+                  ),
+
+
+                  InkWell(
+                    onTap: tambahKebutuhan_Laptop,
                     child: Container(
-                      width: 200,
-                      child: Center(
-                        child: Text(
-                          'Save',
-                          style: TextStyles.title
-                              .copyWith(fontSize: 20, color: Colors.white),
+                      height: 50,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      padding: const EdgeInsets.all(8),
+                      child: const Row(
+                        children: [Icon(Icons.add),
+                          SizedBox(width: 5),
+                          Text('Tambah Kebutuhan...')],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  Align(
+                    alignment: Alignment.center,
+                    child: ElevatedButton(
+                      onPressed: (){
+                        if(_formState.currentState!.validate()){
+                          SimpanLaptop();
+                          print("validate suxxes");
+
+                        }else{
+
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Warna.green,
+                          minimumSize: const Size(300, 50),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25))),
+                      child: Container(
+                        width: 200,
+                        child: Center(
+                          child: Text(
+                            'Save',
+                            style: TextStyles.title
+                                .copyWith(fontSize: 20, color: Colors.white),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                )
-              ],
+                  )
+                ],
+              ),
             ),
           ),
         ),

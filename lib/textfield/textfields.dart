@@ -9,7 +9,8 @@ class MyTextField extends StatelessWidget {
     required this.controller,
     this.isObscure = false,
     this.hasSuffix = false,
-    this.onPress});
+    this.onPress,
+    this.validator});
 
 
   final TextInputAction textInputAction;
@@ -19,12 +20,13 @@ class MyTextField extends StatelessWidget {
   final bool isObscure;
   final bool hasSuffix;
   final VoidCallback ? onPress;
+  final String? Function(String?)? validator;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 350,
-      child: TextField(
+      child: TextFormField(
         textAlign: TextAlign.left,
         controller: controller,
         keyboardType: textInputType,
@@ -56,6 +58,7 @@ class MyTextField extends StatelessWidget {
           hintStyle: TextStyles.body.copyWith(color: Warna.grey),
           contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
         ),
+        validator: validator,
       ),
     );
   }

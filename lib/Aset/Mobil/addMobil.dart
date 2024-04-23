@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -40,6 +41,8 @@ MobilStatus selectedStatus = MobilStatus.aktif;
 
 class _AddMobilState extends State<AddMobil> {
   final merekMobilController = TextEditingController();
+  String selectedKondisi = "";
+  final _formState = GlobalKey<FormState>();
   final idMobilCOntroller = TextEditingController();
   final tipemesinController = TextEditingController();
   final tipeBahanBakarController = TextEditingController();
@@ -52,7 +55,11 @@ class _AddMobilState extends State<AddMobil> {
   final isiKebutuhan_Mobil = TextEditingController();
   final imgMobilController = TextEditingController();
   final ImagePicker _gambarMobil = ImagePicker();
-  List Kebutuhan_Mobil = [
+  List Kebutuhan_Mobil = [];
+  List<String> Status = [
+    "Aktif",
+    "Rusak",
+    "Hilang",
   ];
 
   void PilihGambarMobil() async {
@@ -62,19 +69,6 @@ class _AddMobilState extends State<AddMobil> {
       setState(() {
         imgMobilController.text = pilihMobil.path;
       });
-    }
-  }
-
-  String getStatusMobil(MobilStatus status) {
-    switch (status) {
-      case MobilStatus.aktif:
-        return 'Aktif';
-      case MobilStatus.rusak:
-        return 'Rusak';
-      case MobilStatus.hilang:
-        return 'Hilang';
-      default:
-        return '';
     }
   }
 
@@ -177,7 +171,6 @@ class _AddMobilState extends State<AddMobil> {
     try{
       String lokasiGambarMobil = imgMobilController.text;
       String fotoMobil = '';
-      String status = getStatusMobil(selectedStatus);
       List<Map<String, dynamic>> ListKebutuhan_Mobil = Kebutuhan_Mobil.map((kebutuhan) {
         var timeKebutuhan = contTimeService(kebutuhan.masaKebutuhanMobil);
         return {
@@ -206,7 +199,7 @@ class _AddMobilState extends State<AddMobil> {
         int.parse(akiController.text.trim()),
         ListKebutuhan_Mobil,
         fotoMobil,
-        status
+        selectedKondisi
       );
 
       AwesomeDialog(
@@ -231,7 +224,7 @@ class _AddMobilState extends State<AddMobil> {
 
   Future tambahMobil (String merek, String ID, int tipemesin,
       String tipeBB, String pendingin, String transmisi, int kapasitasBB, String ban, int Aki,List<Map<String, dynamic>> kebutuhan, String GambarMobil,
-      String status) async{
+      String selectedKondisi) async{
     await FirebaseFirestore.instance.collection('Mobil').add({
       'Merek Mobil' : merek,
       'ID Mobil' : ID,
@@ -246,7 +239,7 @@ class _AddMobilState extends State<AddMobil> {
       'Gambar Mobil' : GambarMobil,
       'Jenis Aset' : 'Mobil',
       'Lokasi' : 'Parkiran',
-      'Status' : status
+      'Status' : selectedKondisi
     });
   }
 
@@ -277,264 +270,339 @@ class _AddMobilState extends State<AddMobil> {
           ),
           padding: const EdgeInsets.all(20),
           child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Merek Mobil',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                SizedBox(height: 10),
-                MyTextField(
-                    textInputType: TextInputType.text,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: merekMobilController),
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'ID Mobil',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                SizedBox(height: 10),
-                MyTextField(
-                    textInputType: TextInputType.text,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: idMobilCOntroller),
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Status',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                Column(
-                  children: [
-                    RadioListTile<MobilStatus>(
-                      title: Text('Aktif'),
-                      value: MobilStatus.aktif,
-                      groupValue: selectedStatus,
-                      onChanged: (MobilStatus? value){
-                        setState(() {
-                          selectedStatus = value ?? MobilStatus.aktif;
-                        });
-                      },
+            child: Form(
+              key: _formState,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Merek Mobil',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
                     ),
-                    RadioListTile<MobilStatus>(
-                      title: Text('Rusak'),
-                      value: MobilStatus.rusak,
-                      groupValue: selectedStatus,
-                      onChanged: (MobilStatus? value){
-                        setState(() {
-                          selectedStatus = value ?? MobilStatus.rusak;
-                        });
-                      },
-                    ),
-                    RadioListTile<MobilStatus>(
-                      title: Text('Hilang'),
-                      value: MobilStatus.hilang,
-                      groupValue: selectedStatus,
-                      onChanged: (MobilStatus? value){
-                        setState(() {
-                          selectedStatus = value ?? MobilStatus.hilang;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Kapasitas Mesin (cc)',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
                   ),
-                ),
-                SizedBox(height: 10),
-                MyTextField(
-                    textInputType: TextInputType.number,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: tipemesinController),
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Jenis Bahan Bakar',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                SizedBox(height: 10),
-                MyTextField(
-                    textInputType: TextInputType.text,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: tipeBahanBakarController),
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Sistem Pendingin',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                SizedBox(height: 10),
-                MyTextField(
-                    textInputType: TextInputType.text,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: pendinginController),
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Tipe Transmisi',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                SizedBox(height: 10),
-                MyTextField(
-                    textInputType: TextInputType.text,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: transmisController),
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Kapasitas Bahan Bakar (perliter)',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                SizedBox(height: 10),
-                MyTextField(
-                    textInputType: TextInputType.number,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: kapasitasBBController),
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Ukuran Ban',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                SizedBox(height: 10),
-                MyTextField(
-                    textInputType: TextInputType.text,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: ukuranBanController),
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Kapasitas Aki (Ah)',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                SizedBox(height: 10),
-                MyTextField(
-                    textInputType: TextInputType.number,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: akiController),
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Gambar Mobil',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                SizedBox(height: 10),
-                FieldImage(
-                    controller: imgMobilController,
-                    selectedImageName: imgMobilController.text.isNotEmpty
-                        ? imgMobilController.text.split('/').last
-                        : '',
-                    onPressed: PilihGambarMobil),
+                  const SizedBox(height: 5),
 
-                SizedBox(height: 10),
+                  MyTextField(
+                      textInputType: TextInputType.text,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: merekMobilController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
 
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: Kebutuhan_Mobil.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(Kebutuhan_Mobil[index].namaKebutuhanMobil),
-                      subtitle: Text('${Kebutuhan_Mobil[index].masaKebutuhanMobil} Bulan'),
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {
-                          ApusKebutuhan(index);
-                        },
-                        color: Colors.red,
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'ID Mobil',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.text,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: idMobilCOntroller,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Status',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  DropdownSearch<String>(
+                    popupProps: const PopupProps.menu(
+                      showSelectedItems: true,
+                    ),
+                    items: Status,
+                    dropdownDecoratorProps: DropDownDecoratorProps(
+                      dropdownSearchDecoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                          hintText: "...",
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30)
+                          )
                       ),
-                    );
-                  },
-                ),
-
-                InkWell(
-                  onTap: tambahKebutuhan,
-                  child: Container(
-                    height: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
                     ),
-                    padding: EdgeInsets.all(8),
-                    child: Row(
-                      children: [Icon(Icons.add),
-                        SizedBox(width: 5),
-                        Text('Tambah Kebutuhan...')],
+                    onChanged: (selectedValue){
+                      print(selectedValue);
+                      setState(() {
+                        selectedKondisi = selectedValue ?? "";
+                      });
+                    },
+                  ),
+
+                  const SizedBox(height: 25),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Kapasitas Mesin (cc)',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
                     ),
                   ),
-                ),
+                  const SizedBox(height: 5),
 
-                const SizedBox(height: 30),
-                Align(
-                  alignment: Alignment.center,
-                  child: ElevatedButton(
-                    onPressed: SimpanMobil,
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Warna.green,
-                        minimumSize: const Size(300, 50),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25))),
+                  MyTextField(
+                      textInputType: TextInputType.number,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: tipemesinController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Jenis Bahan Bakar',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.text,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: tipeBahanBakarController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Sistem Pendingin',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.text,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: pendinginController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Tipe Transmisi',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.text,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: transmisController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Kapasitas Bahan Bakar (perliter)',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.number,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: kapasitasBBController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Ukuran Ban',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.text,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: ukuranBanController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Kapasitas Aki (Ah)',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.number,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: akiController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Gambar Mobil',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  FieldImage(
+                      controller: imgMobilController,
+                      selectedImageName: imgMobilController.text.isNotEmpty
+                          ? imgMobilController.text.split('/').last
+                          : '',
+                      onPressed: PilihGambarMobil),
+
+                  const SizedBox(height: 25),
+
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: Kebutuhan_Mobil.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(Kebutuhan_Mobil[index].namaKebutuhanMobil),
+                        subtitle: Text('${Kebutuhan_Mobil[index].masaKebutuhanMobil} Bulan'),
+                        trailing: IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () {
+                            ApusKebutuhan(index);
+                          },
+                          color: Colors.red,
+                        ),
+                      );
+                    },
+                  ),
+
+                  InkWell(
+                    onTap: tambahKebutuhan,
                     child: Container(
-                      width: 200,
-                      child: Center(
-                        child: Text(
-                          'Save',
-                          style: TextStyles.title
-                              .copyWith(fontSize: 20, color: Colors.white),
+                      height: 50,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      padding: const EdgeInsets.all(8),
+                      child: const Row(
+                        children: [Icon(Icons.add),
+                          SizedBox(width: 5),
+                          Text('Tambah Kebutuhan...')],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 30),
+                  Align(
+                    alignment: Alignment.center,
+                    child: ElevatedButton(
+                      onPressed: (){
+                        if(_formState.currentState!.validate()){
+                          SimpanMobil();
+                          print("validate suxxes");
+
+                        }else{
+
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Warna.green,
+                          minimumSize: const Size(300, 50),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25))),
+                      child: SizedBox(
+                        width: 200,
+                        child: Center(
+                          child: Text(
+                            'Save',
+                            style: TextStyles.title
+                                .copyWith(fontSize: 20, color: Colors.white),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                )
-              ],
+                  const SizedBox(height: 20),
+                ],
+              ),
             ),
           ),
         ),

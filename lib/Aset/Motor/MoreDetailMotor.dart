@@ -279,6 +279,23 @@ class _MoreDetailMotorState extends State<MoreDetailMotor> {
                               const SizedBox(height: 15),
 
                               Text(
+                                  'Status',
+                                  style: TextStyles.title.copyWith(
+                                      fontSize: 18,
+                                      color: Warna.darkgrey,
+                                      fontWeight: FontWeight.w500
+                                  )
+                              ),
+                              Text(
+                                '${widget.data['Status']}',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  letterSpacing: 1,
+                                ),
+                              ),
+                              const SizedBox(height: 15),
+
+                              Text(
                                   'ID Motor',
                                   style: TextStyles.title.copyWith(
                                       fontSize: 18,

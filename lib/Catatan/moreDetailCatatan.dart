@@ -17,7 +17,7 @@ class _DetailCatatanState extends State<DetailCatatan> {
     return Scaffold(
       backgroundColor: Warna.green,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF80C5AD),
+        backgroundColor: Warna.green,
         title: Text(
           '${widget.data['ID Aset']}',
           style: TextStyle(
@@ -100,35 +100,31 @@ class _DetailCatatanState extends State<DetailCatatan> {
 
               Align(
                 alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 25),
-                  child: Text(
-                    'List Kebutuhan',
-                    style: TextStyles.title.copyWith(fontSize: 20, color: Warna.white),
+                child: Container(
+
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 25),
+                    child: Text(
+                      'List Kebutuhan',
+                      style: TextStyles.title.copyWith(fontSize: 20, color: Warna.white),
+                    ),
                   ),
                 ),
               ),
               const SizedBox(height: 10),
               Container(
                 width: 350,
+                height: 40,
                 decoration: BoxDecoration(
                   color: Warna.white,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: widget.data['List Kebutuhan'].length,
-                  itemBuilder: (context, index) {
-                    Map<String, dynamic> kebutuhan = widget.data['List Kebutuhan'][index];
-                    String namaKebutuhan = kebutuhan['Nama Kebutuhan'];
-                    String statusKebutuhan = kebutuhan['status'];
-
-                    return ListTile(
-                      title: Text(namaKebutuhan),
-                      subtitle: Text(statusKebutuhan),
-                    );
-                  },
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 10, top: 10),
+                  child: Text(
+                      '${widget.data['Kebutuhan yg dikerjakan']}',
+                      style: TextStyles.body.copyWith(fontSize: 17)
+                  ),
                 ),
               ),
               const SizedBox(height: 10),

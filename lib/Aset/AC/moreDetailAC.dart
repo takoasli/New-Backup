@@ -78,26 +78,29 @@ class _MoreDetailACState extends State<MoreDetailAC> {
                 alignment: Alignment.topCenter,
                 children: [
                   Positioned(
-                    child: Container(
-                      width: 150,
-                      height: 150,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: PageView.builder(
-                        controller: _pageController,
-                        itemCount: imageUrls.length,
-                        onPageChanged: (int page) {
-                          setState(() {
-                            _currentPage = page;
-                          });
-                        },
-                        itemBuilder: (context, index) {
-                          return Image.network(
-                            imageUrls[index],
-                            fit: BoxFit.contain,
-                          );
-                        },
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: Container(
+                        width: 150,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: PageView.builder(
+                          controller: _pageController,
+                          itemCount: imageUrls.length,
+                          onPageChanged: (int page) {
+                            setState(() {
+                              _currentPage = page;
+                            });
+                          },
+                          itemBuilder: (context, index) {
+                            return Image.network(
+                              imageUrls[index],
+                              fit: BoxFit.contain,
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),
@@ -186,181 +189,185 @@ class _MoreDetailACState extends State<MoreDetailAC> {
                   ),
                   Positioned(
                     top: 170,
-                    child: Container(
-                      width: 320,
-                      height: 380,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                  'Kebutuhan Servis',
-                                  style: TextStyles.title.copyWith(
-                                      fontSize: 18,
-                                      color: Warna.darkgrey,
-                                      fontWeight: FontWeight.w500
-                                  )
-                              ),
-                              const SizedBox(height: 15),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount: widget.data['Kebutuhan AC'].length,
-                                    itemBuilder: (context, index) {
-                                      final kebutuhanAC = widget.data['Kebutuhan AC']
-                                      [index]['Nama Kebutuhan AC'];
-                                      final hariKebutuhanAC =
-                                      widget.data['Kebutuhan AC'][index]
-                                      ['Hari Kebutuhan AC'];
-                                      final waktuKebutuhanAC =
-                                      widget.data['Kebutuhan AC'][index]
-                                      ['Waktu Kebutuhan AC'];
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: Container(
+                        width: 320,
+                        height: 360,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: SingleChildScrollView(
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                    'Kebutuhan Servis',
+                                    style: TextStyles.title.copyWith(
+                                        fontSize: 18,
+                                        color: Warna.darkgrey,
+                                        fontWeight: FontWeight.w500
+                                    )
+                                ),
+                                const SizedBox(height: 15),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    ListView.builder(
+                                      shrinkWrap: true,
+                                      itemCount: widget.data['Kebutuhan AC'].length,
+                                      itemBuilder: (context, index) {
+                                        final kebutuhanAC = widget.data['Kebutuhan AC']
+                                        [index]['Nama Kebutuhan AC'];
+                                        final hariKebutuhanAC =
+                                        widget.data['Kebutuhan AC'][index]
+                                        ['Hari Kebutuhan AC'];
+                                        final waktuKebutuhanAC =
+                                        widget.data['Kebutuhan AC'][index]
+                                        ['Waktu Kebutuhan AC'];
 
-                                      final part = kebutuhanAC.split(': ');
-                                      final hasSplit =
-                                      part.length > 1 ? part[1] : kebutuhanAC;
+                                        final part = kebutuhanAC.split(': ');
+                                        final hasSplit =
+                                        part.length > 1 ? part[1] : kebutuhanAC;
 
-                                      return SizedBox(
-                                        height: 80,
-                                        child: ListTile(
-                                          dense: true,
-                                          contentPadding: EdgeInsets.symmetric(
-                                              horizontal: 8),
-                                          title: Padding(
-                                            padding: const EdgeInsets.only(bottom: 8.0),
-                                            child: Text(
-                                              '- $hasSplit',
-                                              style: const TextStyle(
-                                                fontSize: 16,
-                                                letterSpacing: 1,
+                                        return SizedBox(
+                                          height: 80,
+                                          child: ListTile(
+                                            dense: true,
+                                            contentPadding: EdgeInsets.symmetric(
+                                                horizontal: 8),
+                                            title: Padding(
+                                              padding: const EdgeInsets.only(bottom: 8.0),
+                                              child: Text(
+                                                '- $hasSplit',
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  letterSpacing: 1,
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          subtitle: Column(
-                                            crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                            children: [
-                                              showIndicator(
-                                                getValueIndicator(
-                                                    hariKebutuhanAC,
-                                                    epochTimeToData(
-                                                        waktuKebutuhanAC)),
-                                                getProgressColor(
-                                                    waktuKebutuhanAC),
-                                              ),
-                                              const SizedBox(height: 5),
-                                              Row(
-                                                mainAxisAlignment:
-                                                MainAxisAlignment.end,
-                                                children: [
-                                                  Text(
-                                                    overflow:
-                                                    TextOverflow.ellipsis,
-                                                    getRemainingTime(
-                                                        waktuKebutuhanAC),
-                                                    style: const TextStyle(
-                                                      fontSize: 13,
+                                            subtitle: Column(
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                              children: [
+                                                showIndicator(
+                                                  getValueIndicator(
+                                                      hariKebutuhanAC,
+                                                      epochTimeToData(
+                                                          waktuKebutuhanAC)),
+                                                  getProgressColor(
+                                                      waktuKebutuhanAC),
+                                                ),
+                                                const SizedBox(height: 5),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                                  children: [
+                                                    Text(
+                                                      overflow:
+                                                      TextOverflow.ellipsis,
+                                                      getRemainingTime(
+                                                          waktuKebutuhanAC),
+                                                      style: const TextStyle(
+                                                        fontSize: 13,
+                                                      ),
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                      );
-                                    },
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                    'Merek AC',
+                                    style: TextStyles.title.copyWith(
+                                        fontSize: 18,
+                                        color: Warna.darkgrey,
+                                        fontWeight: FontWeight.w500)),
+                                Text(
+                                  '${widget.data['Merek AC']}',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    letterSpacing: 1,
                                   ),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              Text(
-                                  'Merek AC',
-                                  style: TextStyles.title.copyWith(
-                                      fontSize: 18,
-                                      color: Warna.darkgrey,
-                                      fontWeight: FontWeight.w500)),
-                              Text(
-                                '${widget.data['Merek AC']}',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  letterSpacing: 1,
                                 ),
-                              ),
-                              const SizedBox(height: 15),
-                              Text('ID AC',
-                                  style: TextStyles.title.copyWith(
-                                      fontSize: 18,
-                                      color: Warna.darkgrey,
-                                      fontWeight: FontWeight.w500)),
-                              Text(
-                                '${widget.data['ID AC']}',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  letterSpacing: 1,
+                                const SizedBox(height: 15),
+                                Text(
+                                    'Status',
+                                    style: TextStyles.title.copyWith(
+                                        fontSize: 18,
+                                        color: Warna.darkgrey,
+                                        fontWeight: FontWeight.w500)),
+                                Text(
+                                  '${widget.data['Status']}',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    letterSpacing: 1,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 15),
-                              Text('Lokasi Ruangan',
-                                  style: TextStyles.title.copyWith(
-                                      fontSize: 18,
-                                      color: Warna.darkgrey,
-                                      fontWeight: FontWeight.w500)),
-                              Text(
-                                '${widget.data['Ruangan']}',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  letterSpacing: 1,
+                                const SizedBox(height: 15),
+                                Text('ID AC',
+                                    style: TextStyles.title.copyWith(
+                                        fontSize: 18,
+                                        color: Warna.darkgrey,
+                                        fontWeight: FontWeight.w500)),
+                                Text(
+                                  '${widget.data['ID AC']}',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    letterSpacing: 1,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 15),
-                              Text('Status',
-                                  style: TextStyles.title.copyWith(
-                                      fontSize: 18,
-                                      color: Warna.darkgrey,
-                                      fontWeight: FontWeight.w500)),
-                              Text(
-                                '${widget.data['Status']}',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  letterSpacing: 1,
+                                const SizedBox(height: 15),
+                                Text('Lokasi Ruangan',
+                                    style: TextStyles.title.copyWith(
+                                        fontSize: 18,
+                                        color: Warna.darkgrey,
+                                        fontWeight: FontWeight.w500)),
+                                Text(
+                                  '${widget.data['Ruangan']}',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    letterSpacing: 1,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 15),
-                              Text('Kapasitas Watt',
-                                  style: TextStyles.title.copyWith(
-                                      fontSize: 18,
-                                      color: Warna.darkgrey,
-                                      fontWeight: FontWeight.w500)),
-                              Text(
-                                '${widget.data['Kapasitas Watt']} watt',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  letterSpacing: 1,
+                                const SizedBox(height: 15),
+                                Text('Kapasitas Watt',
+                                    style: TextStyles.title.copyWith(
+                                        fontSize: 18,
+                                        color: Warna.darkgrey,
+                                        fontWeight: FontWeight.w500)),
+                                Text(
+                                  '${widget.data['Kapasitas Watt']} watt',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    letterSpacing: 1,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 15),
-                              Text('Kapasitas PK',
-                                  style: TextStyles.title.copyWith(
-                                      fontSize: 18,
-                                      color: Warna.darkgrey,
-                                      fontWeight: FontWeight.w500)),
-                              Text(
-                                '${widget.data['Kapasitas PK']}',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  letterSpacing: 1,
+                                const SizedBox(height: 15),
+                                Text('Kapasitas PK',
+                                    style: TextStyles.title.copyWith(
+                                        fontSize: 18,
+                                        color: Warna.darkgrey,
+                                        fontWeight: FontWeight.w500)),
+                                Text(
+                                  '${widget.data['Kapasitas PK']}',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    letterSpacing: 1,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 10),
-                            ],
+                                const SizedBox(height: 10),
+                              ],
+                            ),
                           ),
                         ),
                       ),

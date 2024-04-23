@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:projek_skripsi/Catatan/Dashboards.dart';
 import 'package:projek_skripsi/komponen/kotakDialogCatatan.dart';
 import '../Aset/ControllerLogic.dart';
-import '../komponen/checklists.dart';
 import '../komponen/kotakBiaya.dart';
 import '../komponen/style.dart';
 
@@ -126,13 +125,13 @@ class _CatatanState extends State<Catatan> {
   void SimpanCatatan() async {
     try {
       // Construct List of Kebutuhan data
-      List<Map<String, dynamic>> DataKebutuhan = [];
-      for (int i = 0; i < List_Kebutuhan.length; i++) {
-        DataKebutuhan.add({
-          'Nama Kebutuhan': List_Kebutuhan[i][0],
-          'status': List_Kebutuhan[i][1] ? 'Done' : 'unDone',
-        });
-      }
+      // List<Map<String, dynamic>> DataKebutuhan = [];
+      // for (int i = 0; i < List_Kebutuhan.length; i++) {
+      //   DataKebutuhan.add({
+      //     'Nama Kebutuhan': List_Kebutuhan[i][0],
+      //     'status': List_Kebutuhan[i][1] ? 'Done' : 'unDone',
+      //   });
+      // }
 
       List<Map<String, dynamic>> CatatanBiaya = [];
       for (int i = 0; i < biayaKebutuhans.length; i++) {
@@ -147,7 +146,7 @@ class _CatatanState extends State<Catatan> {
           merekAset,
           idAset,
           lokasi,
-          DataKebutuhan,
+          selectedKebutuhan,
           CatatanBiaya,
           CatatanLengkapController.text,
           hitungTotalBiaya(),
@@ -198,7 +197,7 @@ class _CatatanState extends State<Catatan> {
       String merekAset,
       String idAset,
       String lokasi,
-      List<Map<String, dynamic>> ListButuh,
+      String selectedKebutuhan,
       List<Map<String, dynamic>> CatatanBiaya,
       String CatatanLengkap,
       double totalBiaya,
@@ -207,7 +206,7 @@ class _CatatanState extends State<Catatan> {
       'Nama Aset': merekAset,
       'ID Aset': idAset,
       'Lokasi Aset' : lokasi,
-      'List Kebutuhan' : ListButuh,
+      'Kebutuhan yg dikerjakan' : selectedKebutuhan,
       'Catatan Biaya' : CatatanBiaya,
       'Catatan Tambahan' : CatatanLengkap,
       'Total Biaya' : totalBiaya,
@@ -308,7 +307,7 @@ class _CatatanState extends State<Catatan> {
                       alignment: Alignment.centerLeft,
                       child: Padding(
                         padding: const EdgeInsets.only(left: 25.0),
-                        child: Text('List Kebutuhan',
+                        child: Text('Kebutuhan',
                         style: TextStyles.title.copyWith(fontSize: 20, color: Warna.white),
                         ),
                       ),
@@ -343,6 +342,14 @@ class _CatatanState extends State<Catatan> {
                                 });
                               },
                             ),
+
+                            selectedKebutuhan.isEmpty ? const Text(
+                              'Mohon pilih setidaknya satu kebutuhan.',
+                              style: TextStyle(
+                                color: Colors.red, // Warna teks menjadi merah
+                                fontStyle: FontStyle.italic, // Teks miring
+                              ),
+                            ) : Container(),
 
                             Padding(
                               padding: const EdgeInsets.only(top: 5),
@@ -382,7 +389,6 @@ class _CatatanState extends State<Catatan> {
 
                     Container(
                       width: 350,
-                      height: 300,
                       decoration: BoxDecoration(
                         color: Warna.white,
                         borderRadius: BorderRadius.circular(10),
@@ -506,7 +512,7 @@ class _CatatanState extends State<Catatan> {
                       child: ElevatedButton(
                           onPressed: SimpanCatatan,
                           style: ElevatedButton.styleFrom(
-                              backgroundColor: Warna.white,
+                              backgroundColor: Warna.lightgreen,
                               minimumSize: const Size(200, 50),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(25),
@@ -519,7 +525,7 @@ class _CatatanState extends State<Catatan> {
                               child: Text(
                                 'Simpan Catatan',
                                 style: TextStyles.title
-                                    .copyWith(fontSize: 20, color: Warna.black),
+                                    .copyWith(fontSize: 20, color: Warna.white),
                               ),
                             ),
                           ),

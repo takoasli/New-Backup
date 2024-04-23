@@ -48,7 +48,7 @@ class KebutuhanModelUpdateAC {
 
 class _UpdateACState extends State<UpdateAC> {
   String selectedRuangan = "";
-  String selectedStatus = "";
+  String selectedKondisi = "";
   final MerekACController = TextEditingController();
   final idACController = TextEditingController();
   final wattController = TextEditingController();
@@ -58,6 +58,7 @@ class _UpdateACState extends State<UpdateAC> {
   final ImagePicker _gambarACIndoor = ImagePicker();
   final ImagePicker _gambarACOutdoor = ImagePicker();
   final gambarAcIndoorController = TextEditingController();
+  final _formState = GlobalKey<FormState>();
   final gambarAcOutdoorController = TextEditingController();
   List Kebutuhan_AC = [];
   List<String> Ruangan = [
@@ -289,7 +290,7 @@ class _UpdateACState extends State<UpdateAC> {
           'Jenis Aset' : 'AC',
           'Waktu Kebutuhan AC' : waktuKebutuhanAC.millisecondsSinceEpoch,
           'Hari Kebutuhan AC' : daysBetween(DateTime.now(), waktuKebutuhanAC),
-          'Status' : selectedStatus
+          'Status' : selectedKondisi
         };
         await FirebaseFirestore.instance.collection('Aset').doc(dokAC).update(DataACBaru);
       }
@@ -328,6 +329,7 @@ class _UpdateACState extends State<UpdateAC> {
       setState(() {
         MerekACController.text = data?['Merek AC'] ?? '';
         idACController.text = data?['ID AC'] ?? '';
+        selectedKondisi = data?['Status'] ?? '';
         wattController.text = (data?['Kapasitas Watt'] ?? '').toString();
         PKController.text = (data?['Kapasitas PK'] ?? '').toString();
         selectedRuangan = data?['Ruangan'] ?? '';
@@ -372,244 +374,285 @@ class _UpdateACState extends State<UpdateAC> {
           ),
           padding: const EdgeInsets.all(20),
           child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Merek AC',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                MyTextField(
-                    textInputType: TextInputType.text,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: MerekACController),
-
-                const SizedBox(height: 10),
-
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'ID AC',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                MyTextField(
-                    textInputType: TextInputType.text,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: idACController),
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Status',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-                DropdownSearch<String>(
-                  popupProps: PopupProps.menu(
-                    showSelectedItems: true,
-                  ),
-                  items: StatusAC,
-                  dropdownDecoratorProps: DropDownDecoratorProps(
-                    dropdownSearchDecoration: InputDecoration(
-                        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                        hintText: "...",
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30)
-                        )
+            child: Form(
+              key: _formState,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Merek AC',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
                     ),
                   ),
-                  onChanged: (selectedValue){
-                    print(selectedValue);
-                    setState(() {
-                      selectedStatus = selectedValue ?? "";
-                    });
-                  },
-                ),
-                const SizedBox(height: 10),
-
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Kapasitas Watt',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-
-                MyTextField(
-                    textInputType: TextInputType.number,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: wattController),
-
-                SizedBox(height: 10),
-
-                Padding(
-                  padding: EdgeInsets.only(bottom: 3),
-                  child: Text('kapasitas PK',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-
-                MyTextField(
-                    textInputType: TextInputType.number,
-                    hint: '',
-                    textInputAction: TextInputAction.next,
-                    controller: PKController),
-
-                SizedBox(height: 10),
-
-                Padding(
-                  padding: EdgeInsets.only(bottom: 3),
-                  child: Text('Ruangan',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey)
-                    ,)
-                  ),
-
-                DropdownSearch<String>(
-                  popupProps: PopupProps.menu(
-                    showSelectedItems: true,
-                  ),
-                  items: Ruangan,
-                  dropdownDecoratorProps: DropDownDecoratorProps(
-                    dropdownSearchDecoration: InputDecoration(
-                        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                        hintText: "Pilih Ruangan...",
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30)
-                        )
-                    ),
-                  ),
-                  onChanged: (selectedValue){
-                    print(selectedValue);
-                    setState(() {
-                      selectedRuangan = selectedValue ?? "";
-                    });
-                  },
-                ),
-                const SizedBox(height: 10),
-
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Gambar AC Indoor',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-
-                FieldImage(
-                  controller: gambarAcIndoorController,
-                  selectedImageName: gambarAcIndoorController.text.isNotEmpty
-                      ? gambarAcIndoorController.text.split('/').last // Display only the image name
-                      : '',
-                  onPressed: PilihUpdateIndoor, // Pass the pickImage method to FieldImage
-                ),
-
-                SizedBox(height: 10),
-
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Gambar AC Outdoor',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-
-                FieldImage(
-                    controller: gambarAcOutdoorController,
-                    selectedImageName: gambarAcIndoorController.text.isNotEmpty
-                        ? gambarAcOutdoorController.text.split('/').last // Display only the image name
-                        : '',
-                    onPressed: PilihUpdateOutdoor),
-                SizedBox(height: 10),
-
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    'Kebutuhan',
-                    style: TextStyles.title
-                        .copyWith(fontSize: 15, color: Warna.darkgrey),
-                  ),
-                ),
-
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: Kebutuhan_AC.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(Kebutuhan_AC[index]['Nama Kebutuhan AC']),
-                      subtitle: Text('${Kebutuhan_AC[index]['Masa Kebutuhan AC']} Bulan'),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () {
-                          ApusKebutuhan_AC(index);
-                        },
-                        color: Colors.red,
-                      ),
-                    );
-                  },
-                ),
-
-
-
-                InkWell(
-                  onTap: tambahKebutuhan_AC,
-                  child: Container(
-                    height: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    padding: const EdgeInsets.all(8),
-                    child: const Row(
-                      children: [Icon(Icons.add),
-                        SizedBox(width: 5),
-                        Text('Tambah Kebutuhan...')],
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 30),
-                Align(
-                  alignment: Alignment.center,
-                  child: ElevatedButton(
-                    onPressed: (){
-                      UpdateAC(widget.dokumenAC, dataAC);
+                  const SizedBox(height: 5),
+                  MyTextField(
+                      textInputType: TextInputType.text,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: MerekACController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
                     },
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Warna.green,
-                        minimumSize: const Size(300, 50),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25))),
+                  ),
+
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'ID AC',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.text,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: idACController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Status',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  DropdownSearch<String>(
+                    popupProps: const PopupProps.menu(
+                      showSelectedItems: true,
+                    ),
+                    items: StatusAC,
+                    dropdownDecoratorProps: DropDownDecoratorProps(
+                      dropdownSearchDecoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                          hintText: "...",
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30)
+                          )
+                      ),
+                    ),
+                    onChanged: (selectedValue){
+                      print(selectedValue);
+                      setState(() {
+                        selectedKondisi = selectedValue ?? "";
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Kapasitas Watt',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.number,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: wattController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text('kapasitas PK',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  MyTextField(
+                      textInputType: TextInputType.number,
+                      hint: '',
+                      textInputAction: TextInputAction.next,
+                      controller: PKController,
+                    validator: (value){
+                      if (value==''){
+                        return "Isi kosong, Harap Diisi!";
+                      }
+                    },
+                  ),
+
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text('Ruangan',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey)
+                      ,)
+                    ),
+                  const SizedBox(height: 5),
+
+                  DropdownSearch<String>(
+                    popupProps: const PopupProps.menu(
+                      showSelectedItems: true,
+                    ),
+                    items: Ruangan,
+                    dropdownDecoratorProps: DropDownDecoratorProps(
+                      dropdownSearchDecoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                          hintText: "Pilih Ruangan...",
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30)
+                          )
+                      ),
+                    ),
+                    onChanged: (selectedValue){
+                      print(selectedValue);
+                      setState(() {
+                        selectedRuangan = selectedValue ?? "";
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Gambar AC Indoor',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  FieldImage(
+                    controller: gambarAcIndoorController,
+                    selectedImageName: gambarAcIndoorController.text.isNotEmpty
+                        ? gambarAcIndoorController.text.split('/').last // Display only the image name
+                        : '',
+                    onPressed: PilihUpdateIndoor, // Pass the pickImage method to FieldImage
+                  ),
+
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Gambar AC Outdoor',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  FieldImage(
+                      controller: gambarAcOutdoorController,
+                      selectedImageName: gambarAcIndoorController.text.isNotEmpty
+                          ? gambarAcOutdoorController.text.split('/').last // Display only the image name
+                          : '',
+                      onPressed: PilihUpdateOutdoor),
+                  const SizedBox(height: 25),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Text(
+                      'Kebutuhan',
+                      style: TextStyles.title
+                          .copyWith(fontSize: 15, color: Warna.darkgrey),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: Kebutuhan_AC.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(Kebutuhan_AC[index]['Nama Kebutuhan AC']),
+                        subtitle: Text('${Kebutuhan_AC[index]['Masa Kebutuhan AC']} Bulan'),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            ApusKebutuhan_AC(index);
+                          },
+                          color: Colors.red,
+                        ),
+                      );
+                    },
+                  ),
+
+
+
+                  InkWell(
+                    onTap: tambahKebutuhan_AC,
                     child: Container(
-                      width: 200,
-                      child: Center(
-                        child: Text(
-                          'Save',
-                          style: TextStyles.title
-                              .copyWith(fontSize: 20, color: Colors.white),
+                      height: 50,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      padding: const EdgeInsets.all(8),
+                      child: const Row(
+                        children: [Icon(Icons.add),
+                          SizedBox(width: 5),
+                          Text('Tambah Kebutuhan...')],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 30),
+                  Align(
+                    alignment: Alignment.center,
+                    child: ElevatedButton(
+                      onPressed: (){
+                        if(_formState.currentState!.validate()){
+                          UpdateAC(widget.dokumenAC, dataAC);
+                          print("validate suxxes");
+
+                        }else{
+
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Warna.green,
+                          minimumSize: const Size(300, 50),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25))),
+                      child: Container(
+                        width: 200,
+                        child: Center(
+                          child: Text(
+                            'Save',
+                            style: TextStyles.title
+                                .copyWith(fontSize: 20, color: Colors.white),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                )
-              ],
+                  )
+                ],
+              ),
             ),
           ),
         ),
