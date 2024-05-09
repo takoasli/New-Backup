@@ -309,3 +309,88 @@ Future<void> exportExcel(
     }
   }
 }
+
+class DatabaseItem {
+  final String id;
+  final String name;
+
+  DatabaseItem({
+    required this.id,
+    required this.name,
+  });
+}
+
+Future<List<DatabaseItem>> getAllDatabaseItems() async {
+  List<DatabaseItem> items = [];
+
+  final QuerySnapshot<Map<String, dynamic>> ACget = await FirebaseFirestore.instance.collection('Aset').get();
+  items.addAll(ACget.docs.map((doc) => DatabaseItem(id: doc.id, name: doc['Aset'])));
+
+  final QuerySnapshot<Map<String, dynamic>> PCget = await FirebaseFirestore.instance.collection('PC').get();
+  items.addAll(PCget.docs.map((doc) => DatabaseItem(id: doc.id, name: doc['PC'])));
+
+  final QuerySnapshot<Map<String, dynamic>> Laptopget = await FirebaseFirestore.instance.collection('Laptop').get();
+  items.addAll(Laptopget.docs.map((doc) => DatabaseItem(id: doc.id, name: doc['Laptop'])));
+
+  final QuerySnapshot<Map<String, dynamic>> Motorget = await FirebaseFirestore.instance.collection('Motor').get();
+  items.addAll(Motorget.docs.map((doc) => DatabaseItem(id: doc.id, name: doc['Motor'])));
+
+  final QuerySnapshot<Map<String, dynamic>> Mobilget = await FirebaseFirestore.instance.collection('Mobil').get();
+  items.addAll(Mobilget.docs.map((doc) => DatabaseItem(id: doc.id, name: doc['Mobil'])));
+
+  return items;
+}
+
+class Kebutuhan {
+  String NamaKebutuhan;
+  int hariKebutuhan;
+  int MasaKebutuhan;
+
+  Kebutuhan(this.NamaKebutuhan, this.hariKebutuhan, this.MasaKebutuhan);
+}
+
+class Aset{
+  String NamaAset;
+  String JenisAset;
+  List<Kebutuhan> kebutuhan;
+
+
+  Aset(this.NamaAset, this.JenisAset,this.kebutuhan);
+}
+
+void FilterLogic() async {
+  // Ambil semua item dari database Firestore
+  List<DatabaseItem> databaseItems = await getAllDatabaseItems();
+
+  // Buat objek-objek Aset dan kebutuhan dari data Firestore
+  var Asets = databaseItems
+      .where((item) => item.name.isNotEmpty) // pastikan nama tidak kosong
+      .map((item) => new Aset(item.name, item.name, [new Kebutuhan(item.name, 10, 10)]))
+      .toList();
+
+  // Tentukan jenis-jenis aset yang ingin Anda filter
+  var jenisAsetFilter = {"Aset", "PC", "Laptop", "Motor", "Mobil"};
+
+  // Gunakan filter untuk mendapatkan Aset yang JenisAset-nya sesuai dengan jenisAsetFilter
+  var filter = Asets.where((e) => jenisAsetFilter.contains(e.JenisAset));
+  if (filter.isNotEmpty) {
+    // Loop melalui hasil filter
+    filter.forEach((aset) {
+      print('Nama Aset: ${aset.NamaAset}');
+      aset.kebutuhan.forEach((kebutuhan) {
+        print('  - Nama Kebutuhan: ${kebutuhan.NamaKebutuhan}');
+        print('  - Hari Kebutuhan: ${kebutuhan.hariKebutuhan}');
+        print('  - Masa Kebutuhan: ${kebutuhan.MasaKebutuhan}');
+      });
+    });
+  } else {
+    print("Tidak ada aset yang sesuai dengan kriteria filter.");
+  }
+
+  // Panggil logika filter di sini, atau gunakan hasil filter sesuai kebutuhan
+  // Misalnya, Anda dapat menetapkan hasil filter ke variabel di kelas Dashboards
+  // atau melakukan tindakan lain sesuai kebutuhan aplikasi Anda.
+}
+
+
+

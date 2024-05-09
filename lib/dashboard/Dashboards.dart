@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:projek_skripsi/komponen/style.dart';
 
+import '../Aset/ControllerLogic.dart';
 import '../MenuBoxContent.dart';
 import '../komponen/scanQR.dart';
 import '../profile.dart';
@@ -281,11 +282,8 @@ class _DashboardsState extends State<Dashboards> {
                                   padding: const EdgeInsets.all(12.0),
                                   child: Row(
                                     children: [
-                                      // Expanded(
-                                      //   child: BacaCatatan(
-                                      //     dokumenCatatan: DokCatatan[index],
-                                      //   ),
-                                      // ),
+                                      // Tambahkan logika filter di sini
+                                      FilterLogic(),
                                     ],
                                   ),
                                 ),
@@ -295,6 +293,7 @@ class _DashboardsState extends State<Dashboards> {
                         ),
                       ),
                     ),
+
                   ],
                 ),
               ),
