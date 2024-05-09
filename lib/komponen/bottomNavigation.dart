@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:projek_skripsi/PilihAC.dart';
 import 'package:projek_skripsi/settings/settings.dart';
-import '../Catatan/Dashboards.dart';
+import '../dashboard/Dashboards.dart';
 import '../profile.dart';
 
 class BottomNav extends StatefulWidget {

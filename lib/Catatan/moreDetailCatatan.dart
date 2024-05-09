@@ -14,13 +14,14 @@ class DetailCatatan extends StatefulWidget {
 class _DetailCatatanState extends State<DetailCatatan> {
   @override
   Widget build(BuildContext context) {
+    String imageUrl = widget.data['Foto Bukti'] ?? '';
     return Scaffold(
       backgroundColor: Warna.green,
       appBar: AppBar(
         backgroundColor: Warna.green,
         title: Text(
           '${widget.data['ID Aset']}',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             letterSpacing: -0.5,
@@ -35,7 +36,7 @@ class _DetailCatatanState extends State<DetailCatatan> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               Container(
                 width: 370,
                 height: 100,
@@ -46,8 +47,8 @@ class _DetailCatatanState extends State<DetailCatatan> {
                 child: Row(
                   children: [
                     const SizedBox(width: 15),
-                    Padding(
-                      padding: const EdgeInsets.all(10),
+                    const Padding(
+                      padding: EdgeInsets.all(10),
                       child: Icon(Icons.home_repair_service_outlined, size: 40),
                     ),
                     Column(
@@ -96,7 +97,7 @@ class _DetailCatatanState extends State<DetailCatatan> {
                     )
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
 
               Align(
                 alignment: Alignment.centerLeft,
@@ -105,7 +106,7 @@ class _DetailCatatanState extends State<DetailCatatan> {
                   child: Padding(
                     padding: const EdgeInsets.only(left: 25),
                     child: Text(
-                      'List Kebutuhan',
+                      'Pengerjaan',
                       style: TextStyles.title.copyWith(fontSize: 20, color: Warna.white),
                     ),
                   ),
@@ -127,7 +128,7 @@ class _DetailCatatanState extends State<DetailCatatan> {
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
               Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(
@@ -160,15 +161,15 @@ class _DetailCatatanState extends State<DetailCatatan> {
                   ),
                 )
                     : ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: widget.data['Catatan Biaya'].length,
-                  itemBuilder: (context, index) {
-                    Map<String, dynamic> kebutuhan = widget.data['Catatan Biaya'][index];
-                    String namaKebutuhan = kebutuhan['Nama Biaya'];
-                    double hargaBiaya = kebutuhan['Harga Biaya'];
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: widget.data['Catatan Biaya'].length,
+                      itemBuilder: (context, index) {
+                        Map<String, dynamic> kebutuhan = widget.data['Catatan Biaya'][index];
+                        String namaKebutuhan = kebutuhan['Nama Biaya'];
+                        double hargaBiaya = kebutuhan['Harga Biaya'];
 
-                    String hargaBiayaRupiah = convertToRupiah(hargaBiaya);
+                        String hargaBiayaRupiah = convertToRupiah(hargaBiaya);
 
                     return ListTile(
                       title: Text(namaKebutuhan),
@@ -177,7 +178,7 @@ class _DetailCatatanState extends State<DetailCatatan> {
                   },
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
 
               Align(
                 alignment: Alignment.centerLeft,
@@ -207,7 +208,39 @@ class _DetailCatatanState extends State<DetailCatatan> {
                   )
                 ),
               ),
+              const SizedBox(height: 20),
+
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 25),
+                  child: Text(
+                    'Foto Bukti',
+                    style: TextStyles.title.copyWith(fontSize: 20, color: Warna.white),
+                  ),
+                ),
+              ),
               const SizedBox(height: 10),
+
+              Container(
+                width: 350,
+                height: 350,
+                decoration: BoxDecoration(
+                  color: Warna.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 15, bottom: 15),
+                  child: imageUrl.isNotEmpty
+                      ? Image.network(
+                    imageUrl,
+                    fit: BoxFit.contain,
+                  )
+                      : const Icon(Icons.list_alt,
+                  size: 100),
+                ),
+                ),
+              const SizedBox(height: 20),
 
               Container(
                 width: 350,

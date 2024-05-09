@@ -21,7 +21,7 @@ class _DetailBacaACState extends State<DetailBacaAC> {
       future: AC.doc(widget.detailDokumenAC).get(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
+          return const CircularProgressIndicator();
         }
 
         if (snapshot.hasError) {

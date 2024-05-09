@@ -466,13 +466,13 @@ class _AddACState extends State<AddAC> {
                   const SizedBox(height: 5),
 
                   DropdownSearch<String>(
-                    popupProps: PopupProps.menu(
+                    popupProps: const PopupProps.menu(
                       showSelectedItems: true,
                     ),
                     items: Ruangan,
                     dropdownDecoratorProps: DropDownDecoratorProps(
                       dropdownSearchDecoration: InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                           hintText: "...",
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(30)
@@ -550,8 +550,8 @@ class _AddACState extends State<AddAC> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5),
                       ),
-                      padding: EdgeInsets.all(8),
-                      child: Row(
+                      padding: const EdgeInsets.all(8),
+                      child: const Row(
                         children: [Icon(Icons.add),
                           SizedBox(width: 5),
                           Text('Tambah Kebutuhan...')],

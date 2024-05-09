@@ -46,7 +46,7 @@ class BacaCatatExport extends StatelessWidget {
               ],
             );
           }else if(snapshot.connectionState == ConnectionState.waiting){
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           }else{
             return Text('Ada Kesalahan saat loading data: ${snapshot.error}');
           }

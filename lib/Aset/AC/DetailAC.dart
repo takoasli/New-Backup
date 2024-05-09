@@ -74,7 +74,7 @@ class _DetailACState extends State<DetailAC> {
               padding: const EdgeInsets.only(top: 20, left: 30),
               child: GridView.builder(
                 itemCount: docDetailAC.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
                 ),
                 itemBuilder: (context, index) {

@@ -1,4 +1,3 @@
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -49,24 +48,6 @@ class _ListCatatanState extends State<ListCatatan> {
     setState(() {
       DokCatatan = snapshot.docs.map((doc) => doc.id).toList();
     });
-  }
-
-
-  Future<void> hapusCatatan(String docServis) async {
-    AwesomeDialog dialog = AwesomeDialog(
-      context: context,
-      dialogType: DialogType.warning,
-      animType: AnimType.bottomSlide,
-      title: 'Yakin ingin menghapus?',
-      desc: 'Data yang dihapus tidak dapat dikembalikan.',
-      btnOkOnPress: () async {
-        await FirebaseFirestore.instance.collection('Catatan Servis').doc(docServis).delete();
-        getCatatan(selectedCategories);
-        ScaffoldMessenger.of(context).showSnackBar(berhasil);
-      },
-      btnCancelOnPress: () {},
-    );
-    await dialog.show();
   }
 
   @override
@@ -147,62 +128,58 @@ class _ListCatatanState extends State<ListCatatan> {
               ),
               padding: const EdgeInsets.all(20),
               child: DokCatatan.isEmpty // Periksa jika setelah filter tidak ada catatan yang ditemukan
-                  ? Center(
-                child: Text(
-                  'Tidak ada catatan terkait aset yang dipilih',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Warna.black,
-                    // Sesuaikan gaya teks sesuai kebutuhan
-                  ),
-                ),
-              )
+                  ? const Center(
+                    child: Text(
+                      'Tidak ada catatan terkait aset yang dipilih',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Warna.black,
+                        // Sesuaikan gaya teks sesuai kebutuhan
+                      ),
+                    ),
+                  )
                   : ListView.builder(
-                itemCount: DokCatatan.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Material(
-                      borderRadius: BorderRadius.circular(10),
-                      elevation: 5,
-                      child: InkWell(
+                    itemCount: DokCatatan.length,
+                    itemBuilder: (BuildContext context, int index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Material(
                         borderRadius: BorderRadius.circular(10),
-                        onTap: () async {
-                          DocumentSnapshot<Map<String, dynamic>> catatanDoc = await FirebaseFirestore.instance
-                              .collection('Catatan Servis')
-                              .doc(DokCatatan[index])
-                              .get();
+                        elevation: 5,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(10),
+                          onTap: () async {
+                            DocumentSnapshot<Map<String, dynamic>> catatanDoc = await FirebaseFirestore.instance
+                                .collection('Catatan Servis')
+                                .doc(DokCatatan[index])
+                                .get();
 
-                          if (catatanDoc.exists) {
-                            Map<String, dynamic> catatanData = catatanDoc.data() ?? {};
+                            if (catatanDoc.exists) {
+                              Map<String, dynamic> catatanData = catatanDoc.data() ?? {};
 
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DetailCatatan(
-                                  data: catatanData,
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => DetailCatatan(data: catatanData,
+                                  ),
                                 ),
-                              ),
-                            );
-                          } else {
-                            // Dokumen tidak ditemukan atau kosong, handle kasus ini jika diperlukan
-                            print('Dokumen tidak ditemukan');
-                          }
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: BacaCatatan(
-                                  dokumenCatatan: DokCatatan[index],
+                              );
+                            } else {
+                              // Dokumen tidak ditemukan atau kosong, handle kasus ini jika diperlukan
+                              print('Dokumen tidak ditemukan');
+                            }
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: BacaCatatan(
+                                    dokumenCatatan: DokCatatan[index],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
                   );
                 },
               ),

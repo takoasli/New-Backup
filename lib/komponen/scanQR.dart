@@ -9,7 +9,7 @@ import 'package:projek_skripsi/Aset/Motor/MoreDetailMotor.dart';
 import 'package:projek_skripsi/komponen/style.dart';
 
 import '../Aset/PC/MoreDetailPC.dart';
-import '../Catatan/Dashboards.dart';
+import '../dashboard/Dashboards.dart';
 
 class ScanQR extends StatelessWidget {
 

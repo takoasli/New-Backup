@@ -15,14 +15,21 @@ class ExportCatatan extends StatefulWidget {
 
 class _ExportCatatanState extends State<ExportCatatan> {
   String selectedWaktu = "";
+  int totalCatatan = 0;
   List<String> kategoriTerpilih = [];
   late List<String> DokCatatanEX = [];
   final namaFile = TextEditingController();
-  List<String> Waktu = [
+  final List<String> Waktu = [
     "Bulan ini",
     "Tahun ini",
     "Semua",
   ];
+
+  void hitungTotalCatatan(List<String> dataCatatan) {
+    setState(() {
+      totalCatatan = dataCatatan.length;
+    });
+  }
 
   Future<void> getCatatan(List<String> selectedCategories) async {
     if (selectedCategories.contains('Semua')) {
@@ -53,6 +60,7 @@ class _ExportCatatanState extends State<ExportCatatan> {
 
     setState(() {
       DokCatatanEX = snapshot.docs.map((doc) => doc.id).toList();
+      hitungTotalCatatan(DokCatatanEX);
     });
   }
 
@@ -62,6 +70,7 @@ class _ExportCatatanState extends State<ExportCatatan> {
     Timestamp endDate = Timestamp.fromDate(DateTime(now.year, now.month + 1, 0));
 
     await getCatatanByDateRange(startDate, endDate);
+    hitungTotalCatatan(DokCatatanEX);
   }
 
   Future<void> getCatatanTahunIni() async {
@@ -70,6 +79,7 @@ class _ExportCatatanState extends State<ExportCatatan> {
     Timestamp endDate = Timestamp.fromDate(DateTime(now.year, 12, 31));
 
     await getCatatanByDateRange(startDate, endDate);
+    hitungTotalCatatan(DokCatatanEX);
   }
 
   Future<void> getCatatanByDateRange(
@@ -84,6 +94,7 @@ class _ExportCatatanState extends State<ExportCatatan> {
 
     setState(() {
       DokCatatanEX = snapshot.docs.map((doc) => doc.id).toList();
+      hitungTotalCatatan(DokCatatanEX);
     });
   }
 
@@ -117,20 +128,19 @@ class _ExportCatatanState extends State<ExportCatatan> {
               child: Image.asset(
                 'gambar/gambar file.png',
                 fit: BoxFit.contain,
-                width: 240,
-                height: 240,
+                width: 217,
+                height: 217,
               ),
             ),
           ),
 
-          // Taro containernya disini
           Expanded(
             child: Padding(
               padding: const EdgeInsets.only(top: 50),
               child: Container(
                 decoration: BoxDecoration(
                   color: Warna.white,
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(40),
                     topRight: Radius.circular(40),
                   ),
@@ -139,109 +149,150 @@ class _ExportCatatanState extends State<ExportCatatan> {
                       color: Colors.black.withOpacity(0.2),
                       spreadRadius: 4,
                       blurRadius: 5,
-                      offset: Offset(0, 3), // changes position of shadow
+                      offset: const Offset(0, 3), // changes position of shadow
                     ),
                   ],
                 ),
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 20.0),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 20),
-                      child: Row(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: Row(
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(left: 30, right: 30),
+                              child: Icon(
+                                Icons.download_for_offline,
+                                size: 55,
+                                color: Warna.green,
+                              ),
+                            ),
+
+                            // Ini dropdown menu
+                            Container(
+                              width: 263,
+                              decoration: BoxDecoration(
+                                color: Warna.white,
+                                borderRadius: BorderRadius.circular(25),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.blueGrey.shade500.withOpacity(0.2),
+                                    spreadRadius: 2,
+                                    blurRadius: 3,
+                                    offset: const Offset(0, 2), // changes position of shadow
+                                  ),
+                                ],
+                              ),
+                              child: DropdownSearch<String>(
+                                popupProps: const PopupProps.menu(
+                                  showSelectedItems: true,
+                                ),
+                                items: Waktu,
+                                dropdownDecoratorProps: DropDownDecoratorProps(
+                                  dropdownSearchDecoration: InputDecoration(
+                                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                                      hintText: "Pilih...",
+                                      border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(30),
+                                      )
+                                  ),
+                                ),
+                                onChanged: (selectedValue){
+                                  print(selectedValue);
+                                  setState(() {
+                                    selectedWaktu = selectedValue ?? "";
+                                    if (selectedWaktu.isNotEmpty) {
+                                      if (selectedWaktu == "Semua") {
+                                        kategoriTerpilih = ["Semua"];
+                                      } else if (selectedWaktu == "Bulan ini") {
+                                        kategoriTerpilih = ["Bulan ini"];
+                                      } else if (selectedWaktu == "Tahun ini") {
+                                        kategoriTerpilih = ["Tahun ini"];
+                                      }
+                                      getCatatan(kategoriTerpilih);
+                                    }
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      Row(
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 30, right: 30),
-                            child: Icon(
-                              Icons.download_for_offline,
-                              size: 55,
-                              color: Warna.green,
+                          const Padding(
+                            padding: EdgeInsets.only(left: 35, bottom: 10),
+                            child: Text("Total item: ",
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: -0.5,
+                              ),
                             ),
                           ),
-
-                          // Ini dropdown menu
-                          Container(
-                            width: 263,
-                            decoration: BoxDecoration(
-                              color: Warna.white,
-                              borderRadius: BorderRadius.circular(25),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.blueGrey.shade500.withOpacity(0.2),
-                                  spreadRadius: 2,
-                                  blurRadius: 3,
-                                  offset: Offset(0, 2), // changes position of shadow
-                                ),
-                              ],
-                            ),
-                            child: DropdownSearch<String>(
-                              popupProps: const PopupProps.menu(
-                                showSelectedItems: true,
+                          Padding(
+                            padding: const EdgeInsets.only(left: 5, bottom: 10),
+                            child: Text(
+                              totalCatatan.toString(),
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: -0.5,
                               ),
-                              items: Waktu,
-                              dropdownDecoratorProps: DropDownDecoratorProps(
-                                dropdownSearchDecoration: InputDecoration(
-                                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                                    hintText: "Pilih...",
-                                    border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(30),
-                                    )
-                                ),
-                              ),
-                              onChanged: (selectedValue){
-                                print(selectedValue);
-                                setState(() {
-                                  selectedWaktu = selectedValue ?? "";
-                                });
-                              },
                             ),
-                          )
+                          ),
                         ],
                       ),
-                    ),
 
-                    // Column di sini
-                    Column(
-                      children: [
-                        MyTextField(
-                              textInputType: TextInputType.text,
-                              hint: 'Nama File...',
-                              textInputAction: TextInputAction.done,
-                              controller: namaFile),
 
-                        Padding(
-                          padding: const EdgeInsets.only(top: 25),
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: ElevatedButton(
-                              onPressed: (){
+                      Column(
+                        children: [
+                          MyTextField(
+                                textInputType: TextInputType.text,
+                                hint: 'Nama File...',
+                                textInputAction: TextInputAction.done,
+                                controller: namaFile),
 
-                              },
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Warna.green,
-                                  minimumSize: const Size(150, 40),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(25))
-                              ),
-                              child: SizedBox(
-                                width: 200,
-                                child: Center(
-                                  child: Text(
-                                    'Export',
-                                    style: TextStyles.title
-                                        .copyWith(fontSize: 18, color: Colors.white),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 25),
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: ElevatedButton(
+                                onPressed: (){
+                                  exportExcel(
+                                      dokumenCatatan: DokCatatanEX,
+                                      namafile: namaFile.text,
+                                      context: context);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Warna.green,
+                                    minimumSize: const Size(150, 40),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(25))
+                                ),
+                                child: SizedBox(
+                                  width: 200,
+                                  child: Center(
+                                    child: Text(
+                                      'Export',
+                                      style: TextStyles.title
+                                          .copyWith(fontSize: 18, color: Colors.white),
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
 
-                          ],
-                        ),
-                      ],
-                    ),
+                            ],
+                          ),
+                        ],
+                      ),
+                ),
                 ),
               ),
             ),

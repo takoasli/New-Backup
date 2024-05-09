@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:projek_skripsi/Catatan/Dashboards.dart';
+import 'package:projek_skripsi/dashboard/Dashboards.dart';
 import 'package:projek_skripsi/login.dart';
 
 class Auth extends StatelessWidget {

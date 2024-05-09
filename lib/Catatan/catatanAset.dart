@@ -1,12 +1,17 @@
+import 'dart:io';
+
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:projek_skripsi/Catatan/Dashboards.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:projek_skripsi/dashboard/Dashboards.dart';
 import 'package:projek_skripsi/komponen/kotakDialogCatatan.dart';
 import '../Aset/ControllerLogic.dart';
 import '../komponen/kotakBiaya.dart';
 import '../komponen/style.dart';
+import '../textfield/PhotoField.dart';
 
 
 class Catatan extends StatefulWidget {
@@ -35,8 +40,10 @@ class _CatatanState extends State<Catatan> {
   final hargaIsiBiaya = TextEditingController(text: '');
   late String idAset;
   late String merekAset;
+  final ImgFotoController = TextEditingController();
   late String jenisAset;
   late String lokasi;
+  final ImagePicker _FotoBukti = ImagePicker();
   String selectedKebutuhan = "";
   List<List<dynamic>> List_Kebutuhan = [];
   List biayaKebutuhans = [];
@@ -57,6 +64,16 @@ class _CatatanState extends State<Catatan> {
       isiDialog.clear();
     });
     Navigator.of(context).pop();
+  }
+
+  void PilihFotoBukti() async {
+    final pilihLaptop =
+    await _FotoBukti.pickImage(source: ImageSource.camera);
+    if (pilihLaptop != null) {
+      setState(() {
+        ImgFotoController.text = pilihLaptop.path;
+      });
+    }
   }
 
   void tambahTugas() {
@@ -122,16 +139,31 @@ class _CatatanState extends State<Catatan> {
     return totalBiaya;
   }
 
+  Future<String> unggahFotoBukti(File FotoBukti) async {
+    try {
+      if (!FotoBukti.existsSync()) {
+        print('File tidak ditemukan!');
+        return '';
+      }
+      Reference penyimpanan = FirebaseStorage.instance
+          .ref()
+          .child('Catatan Servis')
+          .child(ImgFotoController.text.split('/').last);
+
+      UploadTask uploadBukti = penyimpanan.putFile(FotoBukti);
+      await uploadBukti;
+      String BuktiFoto = await penyimpanan.getDownloadURL();
+      return BuktiFoto;
+    } catch (e) {
+      print('pennyimpanan foto bukti gagal : $e');
+      return '';
+    }
+  }
+
   void SimpanCatatan() async {
     try {
-      // Construct List of Kebutuhan data
-      // List<Map<String, dynamic>> DataKebutuhan = [];
-      // for (int i = 0; i < List_Kebutuhan.length; i++) {
-      //   DataKebutuhan.add({
-      //     'Nama Kebutuhan': List_Kebutuhan[i][0],
-      //     'status': List_Kebutuhan[i][1] ? 'Done' : 'unDone',
-      //   });
-      // }
+      String lokasiFotoBukti = ImgFotoController.text;
+      String fotoBukti = '';
 
       List<Map<String, dynamic>> CatatanBiaya = [];
       for (int i = 0; i < biayaKebutuhans.length; i++) {
@@ -139,6 +171,11 @@ class _CatatanState extends State<Catatan> {
           'Nama Biaya': biayaKebutuhans[i].nama,
           'Harga Biaya': biayaKebutuhans[i].biaya,
         });
+      }
+
+      if (lokasiFotoBukti.isNotEmpty) {
+        File imgBukti = File(lokasiFotoBukti);
+        fotoBukti = await unggahFotoBukti(imgBukti);
       }
 
       // Save data into Firestore
@@ -150,7 +187,8 @@ class _CatatanState extends State<Catatan> {
           CatatanBiaya,
           CatatanLengkapController.text,
           hitungTotalBiaya(),
-          jenisAset
+          jenisAset,
+          fotoBukti
       );
 
       AwesomeDialog(
@@ -201,7 +239,8 @@ class _CatatanState extends State<Catatan> {
       List<Map<String, dynamic>> CatatanBiaya,
       String CatatanLengkap,
       double totalBiaya,
-      String jenisAset) async{
+      String jenisAset,
+      String GambarBukti) async{
     await FirebaseFirestore.instance.collection('Catatan Servis').add({
       'Nama Aset': merekAset,
       'ID Aset': idAset,
@@ -212,6 +251,7 @@ class _CatatanState extends State<Catatan> {
       'Total Biaya' : totalBiaya,
       'Jenis Aset' : jenisAset,
       'Tanggal Dilakukan Servis': FieldValue.serverTimestamp(),
+      'Foto Bukti' : GambarBukti
     });
   }
 
@@ -254,7 +294,7 @@ class _CatatanState extends State<Catatan> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Padding(
@@ -316,7 +356,7 @@ class _CatatanState extends State<Catatan> {
                     Padding(
                       padding: const EdgeInsets.only(left: 30, right: 30),
                       child: Container(
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: Warna.white,
                           borderRadius: BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25),
                           bottomRight: Radius.circular(25), bottomLeft: Radius.circular(25)),
@@ -328,9 +368,9 @@ class _CatatanState extends State<Catatan> {
                                 showSelectedItems: true,
                               ),
                               items: List_Kebutuhan.map((item) => item[0].toString()).toList(),
-                              dropdownDecoratorProps: DropDownDecoratorProps(
+                              dropdownDecoratorProps: const DropDownDecoratorProps(
                                 dropdownSearchDecoration: InputDecoration(
-                                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                                    contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                                     hintText: "Pilih...",
                                   border: InputBorder.none,
                                 ),
@@ -389,9 +429,10 @@ class _CatatanState extends State<Catatan> {
 
                     Container(
                       width: 350,
+                      height: 150,
                       decoration: BoxDecoration(
                         color: Warna.white,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(20),
                       ),
                       child: ListView(
                         children: [
@@ -437,7 +478,7 @@ class _CatatanState extends State<Catatan> {
                         ],
                       ),
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
 
                     Align(
                       alignment: Alignment.centerLeft,
@@ -454,14 +495,14 @@ class _CatatanState extends State<Catatan> {
                       height: 150,
                       decoration: BoxDecoration(
                         color: Warna.white,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(20),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.only(left: 10),
                         child: TextField(
                           controller: CatatanLengkapController,
                           maxLines: null, // Untuk mengizinkan multiple baris teks
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             border: InputBorder.none,
                             hintText: 'Masukkan catatan tambahan...',
                           ),
@@ -469,7 +510,37 @@ class _CatatanState extends State<Catatan> {
                       ),
                     ),
 
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
+
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 25.0),
+                        child: Text('Foto Bukti',
+                          style: TextStyles.title.copyWith(fontSize: 20, color: Warna.white),),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+
+                    Container(
+                      width: 350,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: Warna.white,
+                        borderRadius: BorderRadius.circular(35),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10, right: 10),
+                        child: PhotoField(
+                            controller: ImgFotoController,
+                            selectedPhotoName: ImgFotoController.text.isNotEmpty
+                                ? ImgFotoController.text.split('/').last
+                                : '',
+                            onPressed: PilihFotoBukti),
+                      ),
+                    ),
+                    const SizedBox(height: 25),
+
                     Container(
                       width: 350,
                       height: 40,
