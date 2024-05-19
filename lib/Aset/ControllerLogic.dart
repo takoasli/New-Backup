@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../dashboard/BacaStatusData/BacaStatusAC.dart';
+import '../komponen/style.dart';
 
 // Hitung perbandingan tanggal berupa hari
 int daysBetween(DateTime from, DateTime to) {
@@ -320,77 +322,201 @@ class DatabaseItem {
   });
 }
 
-Future<List<DatabaseItem>> getAllDatabaseItems() async {
-  List<DatabaseItem> items = [];
+Future<List<Aset>> getAllDatabaseItems() async {
+  List<Aset> asets = [];
 
-  final QuerySnapshot<Map<String, dynamic>> ACget = await FirebaseFirestore.instance.collection('Aset').get();
-  items.addAll(ACget.docs.map((doc) => DatabaseItem(id: doc.id, name: doc['Aset'])));
+  final QuerySnapshot<Map<String, dynamic>> acGet =
+  await FirebaseFirestore.instance.collection('Aset').get();
+  asets.addAll(acGet.docs.map((doc) => Aset(
+    doc['Merek AC'],
+    'AC',
+    (doc['Kebutuhan AC'] as List<dynamic>).map((kebutuhan) => Kebutuhan(
+      kebutuhan['Nama Kebutuhan AC'],
+      kebutuhan['Hari Kebutuhan AC'] as int,
+      kebutuhan['Masa Kebutuhan AC'] as int,
+      kebutuhan['Waktu Kebutuhan AC'] as int,
+    )).toList(),
+  )));
 
-  final QuerySnapshot<Map<String, dynamic>> PCget = await FirebaseFirestore.instance.collection('PC').get();
-  items.addAll(PCget.docs.map((doc) => DatabaseItem(id: doc.id, name: doc['PC'])));
+  final QuerySnapshot<Map<String, dynamic>> LaptopGet =
+  await FirebaseFirestore.instance.collection('Laptop').get();
+  asets.addAll(LaptopGet.docs.map((doc) => Aset(
+    doc['Merek Laptop'],
+    'Laptop',
+    (doc['Kebutuhan Laptop'] as List<dynamic>).map((kebutuhan) => Kebutuhan(
+      kebutuhan['Nama Kebutuhan Laptop'],
+      kebutuhan['Hari Kebutuhan Laptop'] as int,
+      kebutuhan['Masa Kebutuhan Laptop'] as int,
+      kebutuhan['Waktu Kebutuhan Laptop'] as int,
+    )).toList(),
+  )));
 
-  final QuerySnapshot<Map<String, dynamic>> Laptopget = await FirebaseFirestore.instance.collection('Laptop').get();
-  items.addAll(Laptopget.docs.map((doc) => DatabaseItem(id: doc.id, name: doc['Laptop'])));
+  final QuerySnapshot<Map<String, dynamic>> PCget =
+  await FirebaseFirestore.instance.collection('PC').get();
+  asets.addAll(PCget.docs.map((doc) => Aset(
+    doc['Merek PC'],
+    'PC',
+    (doc['kebutuhan'] as List<dynamic>).map((kebutuhan) => Kebutuhan(
+      kebutuhan['Kebutuhan PC'],
+      kebutuhan['Hari Kebutuhan PC'] as int,
+      kebutuhan['Masa Kebutuhan'] as int,
+      kebutuhan['Waktu Kebutuhan PC'] as int,
+    )).toList(),
+  )));
 
-  final QuerySnapshot<Map<String, dynamic>> Motorget = await FirebaseFirestore.instance.collection('Motor').get();
-  items.addAll(Motorget.docs.map((doc) => DatabaseItem(id: doc.id, name: doc['Motor'])));
+  final QuerySnapshot<Map<String, dynamic>> Motorget =
+  await FirebaseFirestore.instance.collection('Motor').get();
+  asets.addAll(Motorget.docs.map((doc) => Aset(
+    doc['Merek Motor'],
+    'Motor',
+    (doc['Kebutuhan Motor'] as List<dynamic>).map((kebutuhan) => Kebutuhan(
+      kebutuhan['Nama Kebutuhan Motor'],
+      kebutuhan['Hari Kebutuhan Motor'] as int,
+      kebutuhan['Masa Kebutuhan Motor'] as int,
+      kebutuhan['Waktu Kebutuhan Motor'] as int,
+    )).toList(),
+  )));
 
-  final QuerySnapshot<Map<String, dynamic>> Mobilget = await FirebaseFirestore.instance.collection('Mobil').get();
-  items.addAll(Mobilget.docs.map((doc) => DatabaseItem(id: doc.id, name: doc['Mobil'])));
+  final QuerySnapshot<Map<String, dynamic>> Mobilget =
+  await FirebaseFirestore.instance.collection('Mobil').get();
+  asets.addAll(Mobilget.docs.map((doc) => Aset(
+    doc['Merek Mobil'],
+    'Mobil',
+    (doc['Kebutuhan Mobil'] as List<dynamic>).map((kebutuhan) => Kebutuhan(
+      kebutuhan['Nama Kebutuhan Mobil'],
+      kebutuhan['Hari Kebutuhan Mobil'] as int,
+      kebutuhan['Masa Kebutuhan Mobil'] as int,
+      kebutuhan['Waktu Kebutuhan Mobil'] as int,
+    )).toList(),
+  )));
 
-  return items;
+  return asets;
 }
+
+
 
 class Kebutuhan {
-  String NamaKebutuhan;
+  String namaKebutuhan;
   int hariKebutuhan;
-  int MasaKebutuhan;
+  int masaKebutuhan;
+  int waktuKebutuhan;
 
-  Kebutuhan(this.NamaKebutuhan, this.hariKebutuhan, this.MasaKebutuhan);
+  Kebutuhan(this.namaKebutuhan, this.hariKebutuhan, this.masaKebutuhan, this.waktuKebutuhan);
 }
 
-class Aset{
-  String NamaAset;
-  String JenisAset;
+class Aset {
+  String namaAset;
+  String jenisAset;
   List<Kebutuhan> kebutuhan;
 
-
-  Aset(this.NamaAset, this.JenisAset,this.kebutuhan);
+  Aset(this.namaAset, this.jenisAset, this.kebutuhan);
 }
 
-void FilterLogic() async {
-  // Ambil semua item dari database Firestore
-  List<DatabaseItem> databaseItems = await getAllDatabaseItems();
 
-  // Buat objek-objek Aset dan kebutuhan dari data Firestore
-  var Asets = databaseItems
-      .where((item) => item.name.isNotEmpty) // pastikan nama tidak kosong
-      .map((item) => new Aset(item.name, item.name, [new Kebutuhan(item.name, 10, 10)]))
-      .toList();
+Future<List<Widget>> filterLogic(List<String> selectedKategori) async {
+  List<Widget> filteredItems = [];
+  List<Aset> asets = await getAllDatabaseItems();
+  var jenisAsetFilter = selectedKategori;
 
-  // Tentukan jenis-jenis aset yang ingin Anda filter
-  var jenisAsetFilter = {"Aset", "PC", "Laptop", "Motor", "Mobil"};
+  var filteredAsets = asets.where((aset) => jenisAsetFilter.contains(aset.jenisAset));
+  if (filteredAsets.isNotEmpty) {
+    for (var aset in filteredAsets) {
+      List<Widget> kebutuhanWidgets = aset.kebutuhan.map((kebutuhan) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '- ${kebutuhan.namaKebutuhan}',
+                style: const TextStyle(
+                  fontSize: 16,
+                  letterSpacing: 1,
+                ),
+              ),
+              showIndicator(
+                getValueIndicator(kebutuhan.hariKebutuhan, epochTimeToData(kebutuhan.waktuKebutuhan)),
+                getProgressColor(kebutuhan.waktuKebutuhan),
+              ),
+              const SizedBox(height: 5),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    getRemainingTime(kebutuhan.waktuKebutuhan),
+                    style: const TextStyle(
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      }).toList();
 
-  // Gunakan filter untuk mendapatkan Aset yang JenisAset-nya sesuai dengan jenisAsetFilter
-  var filter = Asets.where((e) => jenisAsetFilter.contains(e.JenisAset));
-  if (filter.isNotEmpty) {
-    // Loop melalui hasil filter
-    filter.forEach((aset) {
-      print('Nama Aset: ${aset.NamaAset}');
-      aset.kebutuhan.forEach((kebutuhan) {
-        print('  - Nama Kebutuhan: ${kebutuhan.NamaKebutuhan}');
-        print('  - Hari Kebutuhan: ${kebutuhan.hariKebutuhan}');
-        print('  - Masa Kebutuhan: ${kebutuhan.MasaKebutuhan}');
-      });
-    });
+      filteredItems.add(
+        Padding(
+          padding: const EdgeInsets.only(bottom: 25),
+          child: Container(
+            width: 311,
+            decoration: BoxDecoration(
+              color: Warna.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 3,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('${aset.namaAset}',
+                    style: TextStyles.title.copyWith(fontSize: 20, color: Warna.darkgrey),
+                  ),
+                  const SizedBox(height: 10),
+                  Text('${aset.jenisAset}',
+                    style: TextStyles.body.copyWith(fontSize: 15, color: Warna.darkgrey),
+                  ),
+                  const SizedBox(height: 10),
+                  Text('Kebutuhan :',
+                    style: TextStyles.body.copyWith(fontSize: 15, color: Warna.darkgrey),
+                  ),
+                  const SizedBox(height: 5),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: kebutuhanWidgets,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
   } else {
-    print("Tidak ada aset yang sesuai dengan kriteria filter.");
+    filteredItems.add(
+      const Text(
+        "Tidak ada aset yang sesuai dengan kriteria filter.",
+        style: TextStyle(fontSize: 16, color: Colors.black),
+      ),
+    );
   }
 
-  // Panggil logika filter di sini, atau gunakan hasil filter sesuai kebutuhan
-  // Misalnya, Anda dapat menetapkan hasil filter ke variabel di kelas Dashboards
-  // atau melakukan tindakan lain sesuai kebutuhan aplikasi Anda.
+  return filteredItems;
 }
+
+
+
+
+
+
 
 
 

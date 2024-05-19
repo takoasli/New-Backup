@@ -70,27 +70,7 @@ class _SettingsState extends State<Settings> {
               ),
             ),
           ),
-          SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
-            child: Card(
-              elevation: 1,
-              child: Container(
-                height: _listTileHeight,
-                child: ListTile(
-                  dense: false,
-                  title: Text('Ganti Password'),
-                  subtitle: Text('Mengganti Password pada akun yang sedang login saat ini'),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => GantiPass()),
-                    );
-                  },
-                ),
-              ),
-            ),
-          ),
+
         ],
       ),
     );

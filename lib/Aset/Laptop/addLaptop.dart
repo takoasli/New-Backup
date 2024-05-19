@@ -589,7 +589,6 @@ class _AddLaptopState extends State<AddLaptop> {
                           print("validate suxxes");
 
                         }else{
-
                         }
                       },
                       style: ElevatedButton.styleFrom(

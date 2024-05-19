@@ -3,6 +3,8 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:projek_skripsi/komponen/style.dart';
+import 'package:projek_skripsi/login.dart';
+import 'package:projek_skripsi/manajemenUser.dart';
 
 import '../Aset/ControllerLogic.dart';
 import '../MenuBoxContent.dart';
@@ -34,6 +36,8 @@ class _DashboardsState extends State<Dashboards> {
     "Motor",
     "Mobil"
   ];
+
+  List<Widget> filteredWidgets = [];
 
   //get data database things
   //ac
@@ -93,7 +97,7 @@ class _DashboardsState extends State<Dashboards> {
   }
 
   Future<void> getStatus(List<String> selectedKategori) async {
-    DokStatus.clear(); // Bersihkan list DokStatus
+    DokStatus.clear();
     for (String kategori in selectedKategori) {
       switch (kategori) {
         case 'AC':
@@ -122,6 +126,16 @@ class _DashboardsState extends State<Dashboards> {
     }
   }
 
+  @override
+  void initState() {
+    super.initState();
+    // Call filterLogic() when the widget initializes
+    filterLogic(kategoriTerpilih).then((filteredItems) {
+      setState(() {
+        filteredWidgets = filteredItems;
+      });
+    });
+  }
 
 
   @override
@@ -142,24 +156,7 @@ class _DashboardsState extends State<Dashboards> {
               );
             },
           ),
-
-          IconButton(
-              onPressed: (){
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const setts.Settings()),
-                );
-              },
-              icon: const Icon(Icons.settings)
-          ),
-
-          Padding(
-            padding: const EdgeInsets.only(right: 7),
-            child: IconButton(
-              icon: const Icon(Icons.logout),
-              onPressed: logout,
-            ),
-          ),
+          const SizedBox(width: 23)
         ],
         centerTitle: false,
       ),
@@ -208,91 +205,80 @@ class _DashboardsState extends State<Dashboards> {
                             border: InputBorder.none
                         ),
                       ),
-                      onChanged: (selectedValue){
+                      onChanged: (selectedValue) async {
                         print(selectedValue);
                         setState(() {
                           selectedKategori = selectedValue ?? "";
                           if (selectedKategori.isNotEmpty) {
-                            if (selectedKategori == "AC") {
-                              kategoriTerpilih = ["AC"];
-
-                            } else if (selectedKategori == "Laptop") {
-                              kategoriTerpilih = ["Laptop"];
-
-
-                            } else if (selectedKategori == "PC") {
-                              kategoriTerpilih = ["PC"];
-
-                            } else if (selectedKategori == "Motor"){
-                              kategoriTerpilih = ["Motor"];
-
-                            }else if (selectedKategori == "Mobil"){
-                              kategoriTerpilih = ["Mobil"];
-                            }
-                            getStatus(kategoriTerpilih);
-                          }else{
-                            const Text('Isi Kosong',
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1,
-                                color: Warna.white
-                            ),);
+                            kategoriTerpilih = [selectedKategori];
+                          } else {
+                            kategoriTerpilih = [];
                           }
                         });
+                        await getStatus(kategoriTerpilih);
+                        setState(() {});  // Ensure the state is updated after getStatus
                       },
                     ),
 
+
                     Expanded(
                       child: Container(
-                        decoration: BoxDecoration(
-                          color: Warna.white,
-                          borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-                        ),
-                        padding: const EdgeInsets.all(20),
-                        child: DokStatus.isEmpty
-                            ? const Center(
-                          child: Text(
-                            'Tidak ada catatan terkait aset yang dipilih',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Warna.black,
-                              // Sesuaikan gaya teks sesuai kebutuhan
-                            ),
+                          decoration: const BoxDecoration(
+                            color: Warna.white,
+                            borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
                           ),
-                        )
-                            : ListView.builder(
-                          itemCount: DokStatus.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.5),
-                                      spreadRadius: 2,
-                                      blurRadius: 5,
-                                      offset: const Offset(0, 3), // changes position of shadow
-                                    ),
-                                  ],
-                                ),
+                          padding: const EdgeInsets.all(10),
+                          child: DokStatus.isEmpty
+                              ? const Center(
+                            child: Text(
+                              'Tidak ada catatan terkait aset yang dipilih',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Warna.black,
+                              ),
+                            ),
+                          )
+                              : ListView.builder(
+                            itemCount: DokStatus.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
                                 child: Container(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: Row(
-                                    children: [
-                                      // Tambahkan logika filter di sini
-                                      FilterLogic(),
-                                    ],
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: Row(
+                                      children: [
+                                        FutureBuilder<List<Widget>>(
+                                          future: filterLogic(kategoriTerpilih),  // Pass the selected categories
+                                          builder: (context, snapshot) {
+                                            if (snapshot.connectionState == ConnectionState.waiting) {
+                                              return const CircularProgressIndicator();
+                                            } else if (snapshot.hasError) {
+                                              return Text('Error: ${snapshot.error}');
+                                            } else if (snapshot.data != null) {
+                                              return Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: snapshot.data!,
+                                              );
+                                            } else {
+                                              return const SizedBox();
+                                            }
+                                          },
+                                        ),
+
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            );
-                          },
-                        ),
+                              );
+                            },
+                          )
                       ),
                     ),
+
 
                   ],
                 ),
@@ -304,11 +290,6 @@ class _DashboardsState extends State<Dashboards> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: ScanQR(),
     );
-  }
-  void logout() {
-    Navigator.of(context).pop();
-    Navigator.of(context).pushReplacement;
-    FirebaseAuth.instance.signOut();
   }
 }
 

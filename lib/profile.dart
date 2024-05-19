@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:projek_skripsi/settings/GantiPassword.dart';
 
 import 'komponen/style.dart';
 
@@ -57,12 +58,12 @@ class _ProfilesState extends State<Profiles> {
             return ListView(
               children: <Widget>[
                 buildTop(dataUser),
-                SizedBox(height: 65),
+                const SizedBox(height: 65),
                 buildNama(dataUser),
                 buildKonten(dataUser),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 buildLogout(),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
               ],
             );
           }
@@ -74,6 +75,31 @@ class _ProfilesState extends State<Profiles> {
   Widget buildLogout() {
     return Column(
       children: [
+        ElevatedButton(
+          onPressed: (){
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => GantiPass()),
+            );
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Warna.green,
+            shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+            minimumSize: const Size(200, 50),
+          ),
+          child: Container(
+            width: 200,
+            child: Center(
+              child: Text(
+                'Change Password',
+                style: TextStyles.title
+                    .copyWith(fontSize: 20, color: Colors.white),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
         ElevatedButton(
           onPressed: logout,
           style: ElevatedButton.styleFrom(
@@ -106,7 +132,7 @@ class _ProfilesState extends State<Profiles> {
             dataUser['Nama'] ?? 'No Name',
             style: TextStyles.title.copyWith(fontSize: 30, color: Warna.black),
           ),
-          SizedBox(height: 6),
+          const SizedBox(height: 6),
           Text(
             dataUser['ID'] ?? 'No ID',
             style:
@@ -139,7 +165,7 @@ class _ProfilesState extends State<Profiles> {
       children: [
         Text(title.toUpperCase(),
             style: TextStyles.body.copyWith(color: Warna.black, fontSize: 17)),
-        SizedBox(height: 6),
+        const SizedBox(height: 6),
         Text(content,
             style:
             TextStyles.body.copyWith(color: Colors.black38, fontSize: 15)),

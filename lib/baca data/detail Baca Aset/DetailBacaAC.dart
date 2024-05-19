@@ -36,7 +36,7 @@ class _DetailBacaACState extends State<DetailBacaAC> {
           if (gambarAC.isNotEmpty) {
             imageProvider = NetworkImage(gambarAC);
           } else {
-            imageProvider = AssetImage('gambar/ac.png');
+            imageProvider = const AssetImage('gambar/ac.png');
           }
 
           return Row(
@@ -58,7 +58,7 @@ class _DetailBacaACState extends State<DetailBacaAC> {
           );
         }
 
-        return Text('Data tidak ditemukan');
+        return const Text('Data tidak ditemukan');
       },
     );
   }

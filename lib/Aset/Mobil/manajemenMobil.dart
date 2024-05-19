@@ -39,23 +39,6 @@ class _ManajemenMobilState extends State<ManajemenMobil> {
     });
   }
 
-  Future<void> hapusMobil(String docMobil) async {
-    AwesomeDialog dialog = AwesomeDialog(
-      context: context,
-      dialogType: DialogType.warning,
-      animType: AnimType.bottomSlide,
-      title: 'Yakin ingin menghapus?',
-      desc: 'Data yang dihapus tidak dapat dikembalikan.',
-      btnOkOnPress: () async {
-        await FirebaseFirestore.instance.collection('Mobil').doc(docMobil).delete();
-        getMobil();
-        ScaffoldMessenger.of(context).showSnackBar(berhasil);
-      },
-      btnCancelOnPress: () {},
-    );
-    await dialog.show();
-  }
-
   @override
   void initState(){
     super.initState();
@@ -148,16 +131,6 @@ class _ManajemenMobilState extends State<ManajemenMobil> {
                                   color: Colors.lightBlue,
                                 ),
                               ),
-                              const SizedBox(width: 5),
-                              IconButton(
-                                onPressed: () {
-                                  hapusMobil(DokMobil[index]);
-                                },
-                                icon: const Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                ),
-                              ),
                             ],
                           ),
                         ),
@@ -173,29 +146,6 @@ class _ManajemenMobilState extends State<ManajemenMobil> {
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 20, right: 10),
-            child: Container(
-              height: 60,
-              width: 60,
-              child: FloatingActionButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const AddMobil()),
-                  );
-                },
-                backgroundColor: Warna.green,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(40.0),
-                ),
-                child: const Icon(
-                  Icons.add,
-                  color: Warna.white,
-                ),
-              ),
-            ),
-          ),
 
           Container(
             child: Padding(
@@ -207,6 +157,22 @@ class _ManajemenMobilState extends State<ManajemenMobil> {
                 activeIcon: Icons.close,
                 curve: Curves.bounceIn,
                 children: [
+                  SpeedDialChild(
+                    elevation: 0,
+                    child: const Icon(Icons.add,
+                        color: Warna.white),
+                    labelWidget: const Text("Add",
+                        style: TextStyle(color: Warna.green)
+                    ),
+                    backgroundColor: Warna.green,
+                    onTap: (){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const AddMobil()),
+                      );
+                    },
+                  ),
+
                   SpeedDialChild(
                     elevation: 0,
                     child: const Icon(Icons.create_new_folder,

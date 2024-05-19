@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:projek_skripsi/Catatan/Pilihan.dart';
 import 'package:projek_skripsi/komponen/style.dart';
 import 'package:projek_skripsi/pilihInfoAset.dart';
-
 import 'Catatan/ListCatatan.dart';
-import 'manajemenUser.dart';
 
 class BoxMenuContent extends StatelessWidget {
   const BoxMenuContent({Key? key}) : super(key: key);
@@ -108,7 +107,7 @@ class BoxMenuContent extends StatelessWidget {
                 onTap: (){
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const ManageAcc()),
+                    MaterialPageRoute(builder: (context) => const ExportCatatan()),
                   );
                 },
                 child: Padding(
@@ -128,13 +127,13 @@ class BoxMenuContent extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            Icons.account_box,
+                            Icons.file_present_rounded,
                             size: 50,
                             color: Warna.white,
                           ),
                           SizedBox(height: 4),
                           Text(
-                            "Manage ACC",
+                            "Export Excel",
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 16,

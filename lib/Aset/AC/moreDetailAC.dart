@@ -126,7 +126,7 @@ class _MoreDetailACState extends State<MoreDetailAC> {
                                   ),
                                 ));
                           },
-                          icon: Icon(Icons.qr_code_2, size: 33),
+                          icon: const Icon(Icons.qr_code_2, size: 33),
                         ),
                       )
                   ),
@@ -136,7 +136,7 @@ class _MoreDetailACState extends State<MoreDetailAC> {
                       child: Container(
                         width: 50,
                         height: 50,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           shape: BoxShape.circle,
                           color: Warna.white,
                         ),
@@ -182,7 +182,7 @@ class _MoreDetailACState extends State<MoreDetailAC> {
                               },
                             ).show();
                           },
-                          icon: Icon(Icons.border_color_outlined,
+                          icon: const Icon(Icons.border_color_outlined,
                               size: 33),
                         ),
                       )
@@ -237,7 +237,7 @@ class _MoreDetailACState extends State<MoreDetailAC> {
                                           height: 80,
                                           child: ListTile(
                                             dense: true,
-                                            contentPadding: EdgeInsets.symmetric(
+                                            contentPadding: const EdgeInsets.symmetric(
                                                 horizontal: 8),
                                             title: Padding(
                                               padding: const EdgeInsets.only(bottom: 8.0),

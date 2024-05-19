@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:projek_skripsi/Aset/AC/ManajemenAC.dart';
 import 'package:projek_skripsi/baca%20data/detail%20Baca%20Aset/DetailBacaAC.dart';
-
 import '../../komponen/style.dart';
 
 class DetailAC extends StatefulWidget {
@@ -24,8 +23,6 @@ class _DetailACState extends State<DetailAC> {
     });
   }
 
-  void performSearch(String value) {
-  }
 
   @override
   void initState() {
@@ -35,6 +32,7 @@ class _DetailACState extends State<DetailAC> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF61BF9D),
@@ -64,13 +62,16 @@ class _DetailACState extends State<DetailAC> {
                 ),
               ),
               onChanged: (value) {
-
-                performSearch(value);
+                setState(() {
+                });
               },
             ),
           ),
           Expanded(
-            child: Padding(
+            child: docDetailAC.isEmpty // Periksa apakah filteredList kosong
+                ? const Center(child: Text(
+                'Data tidak ditemukan')) // Jika kosong, tampilkan teks "Data tidak ditemukan"
+                : Padding(
               padding: const EdgeInsets.only(top: 20, left: 30),
               child: GridView.builder(
                 itemCount: docDetailAC.length,
@@ -89,43 +90,38 @@ class _DetailACState extends State<DetailAC> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: SpeedDial(
-          child: const Icon(Icons.more_horiz,
-              color: Warna.white),
+          child: const Icon(Icons.more_horiz, color: Warna.white),
           backgroundColor: Warna.green,
           activeIcon: Icons.close,
           curve: Curves.bounceIn,
           children: [
             SpeedDialChild(
               elevation: 0,
-              child: const Icon(Icons.create_new_folder,
-                  color: Warna.white),
-              labelWidget: const Text("Manage AC",
-                  style: TextStyle(color: Warna.green)
-              ),
+              child: const Icon(Icons.create_new_folder, color: Warna.white),
+              labelWidget: const Text(
+                  "Manage AC", style: TextStyle(color: Warna.green)),
               backgroundColor: Warna.green,
-              onTap: (){
+              onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const ManajemenAC()),
                 );
               },
             ),
-
             SpeedDialChild(
               elevation: 0,
-              child: const Icon(Icons.ac_unit,
-                  color: Warna.white),
-              labelWidget: const Text("Detail AC",
-                  style: TextStyle(color: Warna.green)
-              ),
+              child: const Icon(Icons.ac_unit, color: Warna.white),
+              labelWidget: const Text(
+                  "Detail AC", style: TextStyle(color: Warna.green)),
               backgroundColor: Warna.green,
-              onTap: (){
+              onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const DetailAC()),
                 );
               },
-            )
+            ),
+
           ],
         ),
       ),
