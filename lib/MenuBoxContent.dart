@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:projek_skripsi/Catatan/Pilihan.dart';
 import 'package:projek_skripsi/komponen/style.dart';
 import 'package:projek_skripsi/pilihInfoAset.dart';
+import 'package:projek_skripsi/settings/ExportCatatan.dart';
 import 'Catatan/ListCatatan.dart';
 
 class BoxMenuContent extends StatelessWidget {
@@ -107,7 +108,7 @@ class BoxMenuContent extends StatelessWidget {
                 onTap: (){
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const ExportCatatan()),
+                    MaterialPageRoute(builder: (context) => const ExportCatatans()),
                   );
                 },
                 child: Padding(

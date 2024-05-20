@@ -3,14 +3,10 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:projek_skripsi/komponen/style.dart';
-import 'package:projek_skripsi/login.dart';
-import 'package:projek_skripsi/manajemenUser.dart';
-
 import '../Aset/ControllerLogic.dart';
 import '../MenuBoxContent.dart';
 import '../komponen/scanQR.dart';
 import '../profile.dart';
-import '../settings/settings.dart' as setts;
 
 class Dashboards extends StatefulWidget {
   Dashboards({super.key});
@@ -69,7 +65,7 @@ class _DashboardsState extends State<Dashboards> {
 
     final QuerySnapshot<Map<String, dynamic>> snapshot = await query.get();
     setState(() {
-    DokLaptop = snapshot.docs.map((doc) => doc.id).toList();
+      DokLaptop = snapshot.docs.map((doc) => doc.id).toList();
     });
   }
 
@@ -81,7 +77,7 @@ class _DashboardsState extends State<Dashboards> {
 
     final QuerySnapshot<Map<String, dynamic>> snapshot = await query.get();
     setState(() {
-    DokMotor = snapshot.docs.map((doc) => doc.id).toList();
+      DokMotor = snapshot.docs.map((doc) => doc.id).toList();
     });
   }
 
@@ -92,12 +88,12 @@ class _DashboardsState extends State<Dashboards> {
 
     final QuerySnapshot<Map<String, dynamic>> snapshot = await query.get();
     setState(() {
-    DokMobil = snapshot.docs.map((doc) => doc.id).toList();
+      DokMobil = snapshot.docs.map((doc) => doc.id).toList();
     });
   }
 
   Future<void> getStatus(List<String> selectedKategori) async {
-    DokStatus.clear();
+    DokStatus.clear(); // Membersihkan DokStatus sebelum menambahkan data baru
     for (String kategori in selectedKategori) {
       switch (kategori) {
         case 'AC':
@@ -126,16 +122,21 @@ class _DashboardsState extends State<Dashboards> {
     }
   }
 
+
   @override
   void initState() {
     super.initState();
-    // Call filterLogic() when the widget initializes
-    filterLogic(kategoriTerpilih).then((filteredItems) {
-      setState(() {
-        filteredWidgets = filteredItems;
+    // Panggil getStatus dengan kategoriTerpilih saat ini
+    getStatus(kategoriTerpilih).then((_) {
+      // Setelah mendapatkan status, panggil filterLogic dan update state
+      filterLogic(kategoriTerpilih).then((filteredItems) {
+        setState(() {
+          filteredWidgets = filteredItems;
+        });
       });
     });
   }
+
 
 
   @override
@@ -149,7 +150,7 @@ class _DashboardsState extends State<Dashboards> {
         actions: [
           IconButton(
             icon: const Icon(Icons.person),
-            onPressed: (){
+            onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => Profiles()),
@@ -172,12 +173,12 @@ class _DashboardsState extends State<Dashboards> {
 
             const Padding(
               padding: EdgeInsets.only(bottom: 10),
-              child: Text('Activity View',
+              child: Text('Assets need',
                 style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1,
-                  color: Warna.white
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1,
+                    color: Warna.white
                 ),
               ),
             ),
@@ -185,8 +186,14 @@ class _DashboardsState extends State<Dashboards> {
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
               child: Container(
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
+                height: MediaQuery
+                    .of(context)
+                    .size
+                    .height,
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width,
                 decoration: BoxDecoration(
                   color: Warna.white,
                   borderRadius: BorderRadius.circular(20),
@@ -215,71 +222,52 @@ class _DashboardsState extends State<Dashboards> {
                             kategoriTerpilih = [];
                           }
                         });
+
+                        // Panggil getStatus dan filterLogic di sini
                         await getStatus(kategoriTerpilih);
-                        setState(() {});  // Ensure the state is updated after getStatus
+                        filteredWidgets = await filterLogic(kategoriTerpilih);
+
+                        // Perbarui state setelah pembaruan dilakukan
+                        setState(() {});
                       },
                     ),
 
-
                     Expanded(
                       child: Container(
-                          decoration: const BoxDecoration(
-                            color: Warna.white,
-                            borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-                          ),
-                          padding: const EdgeInsets.all(10),
-                          child: DokStatus.isEmpty
-                              ? const Center(
-                            child: Text(
-                              'Tidak ada catatan terkait aset yang dipilih',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Warna.black,
-                              ),
+                        decoration: const BoxDecoration(
+                          color: Warna.white,
+                          borderRadius: BorderRadius.only(topLeft: Radius
+                              .circular(20), topRight: Radius.circular(20)),
+                        ),
+                        padding: const EdgeInsets.all(10),
+                        child: DokStatus.isEmpty
+                            ? const Center(
+                          child: Text(
+                            'Tidak ada catatan terkait aset yang dipilih',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Warna.black,
                             ),
-                          )
-                              : ListView.builder(
-                            itemCount: DokStatus.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(12.0),
-                                    child: Row(
-                                      children: [
-                                        FutureBuilder<List<Widget>>(
-                                          future: filterLogic(kategoriTerpilih),  // Pass the selected categories
-                                          builder: (context, snapshot) {
-                                            if (snapshot.connectionState == ConnectionState.waiting) {
-                                              return const CircularProgressIndicator();
-                                            } else if (snapshot.hasError) {
-                                              return Text('Error: ${snapshot.error}');
-                                            } else if (snapshot.data != null) {
-                                              return Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: snapshot.data!,
-                                              );
-                                            } else {
-                                              return const SizedBox();
-                                            }
-                                          },
-                                        ),
-
-                                      ],
-                                    ),
-                                  ),
+                          ),
+                        )
+                            : ListView.builder(
+                          itemCount: filteredWidgets.length,
+                          // Use filteredWidgets instead of DokStatus
+                          itemBuilder: (BuildContext context, int index) {
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                              );
-                            },
-                          )
+                                child: filteredWidgets[index], // Menggunakan widget individual dari filteredWidgets
+                              ),
+                            );
+                          },
+
+                        ),
                       ),
                     ),
-
-
                   ],
                 ),
               ),
@@ -292,4 +280,3 @@ class _DashboardsState extends State<Dashboards> {
     );
   }
 }
-

@@ -6,14 +6,14 @@ import 'package:projek_skripsi/textfield/textfields.dart';
 import '../Aset/ControllerLogic.dart';
 import '../komponen/style.dart';
 
-class ExportCatatan extends StatefulWidget {
-  const ExportCatatan({Key? key}) : super(key: key);
+class ExportCatatans extends StatefulWidget {
+  const ExportCatatans({Key? key}) : super(key: key);
 
   @override
-  State<ExportCatatan> createState() => _ExportCatatanState();
+  State<ExportCatatans> createState() => _ExportCatatanState();
 }
 
-class _ExportCatatanState extends State<ExportCatatan> {
+class _ExportCatatanState extends State<ExportCatatans> {
   String selectedWaktu = "";
   int totalCatatan = 0;
   List<String> kategoriTerpilih = [];

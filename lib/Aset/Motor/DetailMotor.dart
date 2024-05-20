@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:projek_skripsi/Aset/Motor/ManajemenMotor.dart';
-import 'package:projek_skripsi/baca%20data/detail%20Baca%20Aset/DetailBacaMotor.dart';
-
+import 'package:projek_skripsi/Aset/Motor/MoreDetailMotor.dart';
+import '../../komponen/boxAset.dart';
 import '../../komponen/style.dart';
 
 class DetailMotor extends StatefulWidget {
@@ -15,22 +15,48 @@ class DetailMotor extends StatefulWidget {
 
 class _DetailMotorState extends State<DetailMotor> {
   late List<String> docDetailMotor = [];
+  late List<Map<String, dynamic>> _allresult = [];
+  late List<Map<String, dynamic>> _resultList = [];
+  final TextEditingController _searchController = TextEditingController();
 
   Future<void> getDetailMotor() async {
     final QuerySnapshot<Map<String, dynamic>> snapshot =
     await FirebaseFirestore.instance.collection('Motor').get();
     setState(() {
       docDetailMotor = snapshot.docs.map((doc) => doc.id).toList();
+      _allresult = snapshot.docs.map((doc) => doc.data()).toList().cast<Map<String, dynamic>>();
+      _resultList = List.from(_allresult);
     });
-  }
-
-  void performSearch(String value) {
   }
 
   @override
   void initState() {
     super.initState();
     getDetailMotor();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  void _onSearchChanged() {
+    searchResultList(_searchController.text);
+  }
+
+  void searchResultList(String query) {
+    if (query.isNotEmpty) {
+      List<Map<String, dynamic>> showResult = [];
+      for (var dataMotor in _allresult) {
+        var name = dataMotor['Merek Motor'].toString().toLowerCase();
+        if (name.contains(query.toLowerCase())) {
+          showResult.add(dataMotor);
+        }
+      }
+      setState(() {
+        _resultList = showResult;
+      });
+    } else {
+      setState(() {
+        _resultList = List.from(_allresult);
+      });
+    }
   }
 
   @override
@@ -54,6 +80,7 @@ class _DetailMotorState extends State<DetailMotor> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: TextField(
+              controller: _searchController,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.white,
@@ -63,25 +90,56 @@ class _DetailMotorState extends State<DetailMotor> {
                   borderRadius: BorderRadius.circular(40),
                 ),
               ),
-              onChanged: (value) {
-
-                performSearch(value);
-              },
             ),
           ),
+
           Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 20, left: 30),
-                child: GridView.builder(
-                  itemCount: docDetailMotor.length,
-                  gridDelegate:
-                  SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-                  itemBuilder: (context, index) {
-                    return DetailBacaMotor(detailDokumenMotor: docDetailMotor[index]);
-                  },
+            child: _resultList.isEmpty
+                ? const Center(
+              child: Text('Data tidak ditemukan'),
+            )
+                : Padding(
+              padding: const EdgeInsets.only(top: 20, left: 30),
+              child: GridView.builder(
+                itemCount: _resultList.length,
+                gridDelegate:
+                const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
                 ),
-              )
-          )
+                itemBuilder: (context, index) {
+                  Map<String, dynamic> dataMotor = _resultList[index];
+                  String gambarMotor = dataMotor['Gambar Motor'] ?? '';
+
+                  ImageProvider<Object>? imageProvider;
+                  if (gambarMotor.isNotEmpty) {
+                    imageProvider = NetworkImage(gambarMotor);
+                  } else {
+                    imageProvider = const AssetImage('gambar/motor.png');
+                  }
+
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      BoxAset(
+                        text: '${dataMotor['Merek Motor']}',
+                        gambar: imageProvider,
+                        halaman: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MoreDetailMotor(
+                                data: dataMotor,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,

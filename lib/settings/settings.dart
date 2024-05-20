@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:projek_skripsi/settings/ExportAset.dart';
 import 'package:projek_skripsi/settings/ExportCatatan.dart';
-import 'package:projek_skripsi/settings/GantiPassword.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -44,7 +42,7 @@ class _SettingsState extends State<Settings> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => ExportCatatan()),
+                      MaterialPageRoute(builder: (context) => ExportCatatans()),
                     );
                   },
                 ),

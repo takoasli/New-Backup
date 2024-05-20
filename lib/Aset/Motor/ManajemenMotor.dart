@@ -81,10 +81,10 @@ class _ManajemenMotorState extends State<ManajemenMotor> {
               // },
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Expanded(
             child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Warna.white,
                 borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
               ),
@@ -150,7 +150,7 @@ class _ManajemenMotorState extends State<ManajemenMotor> {
             child: Padding(
               padding: const EdgeInsets.only(bottom: 25, right: 10),
               child: SpeedDial(
-                child: Icon(Icons.more_horiz,
+                child: const Icon(Icons.more_horiz,
                     color: Warna.white),
                 backgroundColor: Warna.green,
                 activeIcon: Icons.close,
