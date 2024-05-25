@@ -74,6 +74,87 @@ class _AddMotorState extends State<AddMotor> {
     }
   }
 
+  void PilihFotoMotor() async {
+    final pilihLaptop =
+    await _gambarMotor.pickImage(source: ImageSource.camera);
+    if (pilihLaptop != null) {
+      setState(() {
+        ImgMotorController.text = pilihLaptop.path;
+      });
+    }
+  }
+
+  Future<void> pilihSumberGambar(bool isIndoor) async {
+    final pilihSumber = await showDialog<int>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        title: const Text('Pilih Sumber Gambar'),
+        actionsPadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
+        contentPadding: const EdgeInsets.all(20.0),
+        content: Row(
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.green,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 15.0),
+                ),
+                onPressed: () => Navigator.of(context).pop(0), // Pilih dari galeri
+                child: const Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.photo_library, size: 50),
+                    SizedBox(height: 5),
+                    Text('Galeri', style: TextStyle(fontSize: 18)),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.green,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 15.0),
+                ),
+                onPressed: () => Navigator.of(context).pop(1), // Ambil foto
+                child: const Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.camera_alt, size: 50),
+                    SizedBox(height: 5),
+                    Text('Kamera', style: TextStyle(fontSize: 18)),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (pilihSumber == 0) {
+      // Pilih dari galeri
+      if (isIndoor) {
+        PilihGambarMotor();
+      }
+    } else if (pilihSumber == 1) {
+      // Ambil foto
+      if (isIndoor) {
+        PilihFotoMotor();
+      }
+    }
+  }
+
   Future<String> unggahGambarMotor(File gambarMotor) async {
     try {
       if (!gambarMotor.existsSync()) {
@@ -212,7 +293,7 @@ class _AddMotorState extends State<AddMotor> {
         desc: 'Data Motor Berhasil Ditambahkan',
         btnOkOnPress: () {
           Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => ManajemenMotor()),
+              context, MaterialPageRoute(builder: (context) => const ManajemenMotor()),
           );
         },
       ).show();
@@ -557,20 +638,22 @@ class _AddMotorState extends State<AddMotor> {
                       selectedImageName: ImgMotorController.text.isNotEmpty
                           ? ImgMotorController.text.split('/').last
                           : '',
-                      onPressed: PilihGambarMotor),
+                      onPressed: (){
+                        pilihSumberGambar(true);
+                      }),
 
-                  SizedBox(height: 25),
+                  const SizedBox(height: 25),
 
                   ListView.builder(
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     itemCount: Kebutuhan_Motor.length,
                     itemBuilder: (context, index) {
                       return ListTile(
                         title: Text(Kebutuhan_Motor[index].namaKebutuhanMotor),
                         subtitle: Text('${Kebutuhan_Motor[index].masaKebutuhanMotor} Bulan'),
                         trailing: IconButton(
-                          icon: Icon(Icons.delete),
+                          icon: const Icon(Icons.delete),
                           onPressed: () {
                             ApusKebutuhan(index);
                           },
@@ -587,8 +670,8 @@ class _AddMotorState extends State<AddMotor> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5),
                       ),
-                      padding: EdgeInsets.all(8),
-                      child: Row(
+                      padding: const EdgeInsets.all(8),
+                      child: const Row(
                         children: [Icon(Icons.add),
                           SizedBox(width: 5),
                           Text('Tambah Kebutuhan...')],

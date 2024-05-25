@@ -2,8 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:projek_skripsi/komponen/style.dart';
 
-import '../textfield/textfields.dart';
-
 class GantiPass extends StatefulWidget {
   GantiPass({Key? key});
 

@@ -10,6 +10,7 @@ class MyTextField extends StatelessWidget {
     this.isObscure = false,
     this.hasSuffix = false,
     this.onPress,
+    this.readOnly = false,
     this.validator});
 
 
@@ -21,6 +22,7 @@ class MyTextField extends StatelessWidget {
   final bool hasSuffix;
   final VoidCallback ? onPress;
   final String? Function(String?)? validator;
+  final bool readOnly;
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +33,7 @@ class MyTextField extends StatelessWidget {
         controller: controller,
         keyboardType: textInputType,
         obscureText: isObscure,
+        readOnly: readOnly,
         style: TextStyles.body,
         decoration: InputDecoration(
           suffixIcon: hasSuffix ? IconButton(

@@ -162,6 +162,81 @@ class _UpdateACState extends State<UpdateAC> {
     );
   }
 
+  Future<void> pilihSumberGambar(bool isIndoor) async {
+    final pilihSumber = await showDialog<int>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        title: const Text('Pilih Sumber Gambar'),
+        actionsPadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
+        contentPadding: const EdgeInsets.all(20.0),
+        content: Row(
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.green,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 15.0),
+                ),
+                onPressed: () => Navigator.of(context).pop(0), // Pilih dari galeri
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.photo_library, size: 50),
+                    const SizedBox(height: 5),
+                    const Text('Galeri', style: TextStyle(fontSize: 18)),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.green,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 15.0),
+                ),
+                onPressed: () => Navigator.of(context).pop(1), // Ambil foto
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.camera_alt, size: 50),
+                    const SizedBox(height: 5),
+                    const Text('Kamera', style: TextStyle(fontSize: 18)),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (pilihSumber == 0) {
+      // Pilih dari galeri
+      if (isIndoor) {
+        PilihUpdateIndoor();
+      } else {
+        PilihUpdateOutdoor();
+      }
+    } else if (pilihSumber == 1) {
+      // Ambil foto
+      if (isIndoor) {
+        PilihFotoBuktiIndoor();
+      } else {
+        PilihFotoBuktiOutdoor();
+      }
+    }
+  }
+
   void tambahKebutuhan_AC(){
     showDialog(
         context: context,
@@ -196,6 +271,26 @@ class _UpdateACState extends State<UpdateAC> {
     if (pilihOutdoor != null) {
       setState(() {
         gambarAcOutdoorController.text = pilihOutdoor.path;
+      });
+    }
+  }
+
+  void PilihFotoBuktiIndoor() async {
+    final pilihLaptop =
+    await _gambarACIndoor.pickImage(source: ImageSource.camera);
+    if (pilihLaptop != null) {
+      setState(() {
+        gambarAcIndoorController.text = pilihLaptop.path;
+      });
+    }
+  }
+
+  void PilihFotoBuktiOutdoor() async {
+    final pilihLaptop =
+    await _gambarACOutdoor.pickImage(source: ImageSource.camera);
+    if (pilihLaptop != null) {
+      setState(() {
+        gambarAcOutdoorController.text = pilihLaptop.path;
       });
     }
   }
@@ -551,7 +646,9 @@ class _UpdateACState extends State<UpdateAC> {
                     selectedImageName: gambarAcIndoorController.text.isNotEmpty
                         ? gambarAcIndoorController.text.split('/').last // Display only the image name
                         : '',
-                    onPressed: PilihUpdateIndoor, // Pass the pickImage method to FieldImage
+                    onPressed: (){
+                      pilihSumberGambar(true);
+                    }, // Pass the pickImage method to FieldImage
                   ),
 
                   const SizedBox(height: 25),
@@ -571,7 +668,10 @@ class _UpdateACState extends State<UpdateAC> {
                       selectedImageName: gambarAcIndoorController.text.isNotEmpty
                           ? gambarAcOutdoorController.text.split('/').last // Display only the image name
                           : '',
-                      onPressed: PilihUpdateOutdoor),
+                      onPressed: (){
+                        pilihSumberGambar(false);
+                      },
+                  ),
                   const SizedBox(height: 25),
 
                   Padding(

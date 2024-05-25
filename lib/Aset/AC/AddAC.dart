@@ -102,6 +102,104 @@ class _AddACState extends State<AddAC> {
     }
   }
 
+  Future<void> pilihSumberGambar(bool isIndoor) async {
+    final pilihSumber = await showDialog<int>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        title: const Text('Pilih Sumber Gambar'),
+        actionsPadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
+        contentPadding: const EdgeInsets.all(20.0),
+        content: Row(
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.green,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 15.0),
+                ),
+                onPressed: () => Navigator.of(context).pop(0), // Pilih dari galeri
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.photo_library, size: 50),
+                    const SizedBox(height: 5),
+                    const Text('Galeri', style: TextStyle(fontSize: 18)),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.green,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 15.0),
+                ),
+                onPressed: () => Navigator.of(context).pop(1), // Ambil foto
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.camera_alt, size: 50),
+                    const SizedBox(height: 5),
+                    const Text('Kamera', style: TextStyle(fontSize: 18)),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (pilihSumber == 0) {
+      // Pilih dari galeri
+      if (isIndoor) {
+        PilihIndoor();
+      } else {
+        PilihOutdoor();
+      }
+    } else if (pilihSumber == 1) {
+      // Ambil foto
+      if (isIndoor) {
+        PilihFotoBuktiIndoor();
+      } else {
+        PilihFotoBuktiOutdoor();
+      }
+    }
+  }
+
+
+
+
+  void PilihFotoBuktiIndoor() async {
+    final pilihLaptop =
+    await _gambarACIndoor.pickImage(source: ImageSource.camera);
+    if (pilihLaptop != null) {
+      setState(() {
+        gambarAcIndoorController.text = pilihLaptop.path;
+      });
+    }
+  }
+
+  void PilihFotoBuktiOutdoor() async {
+    final pilihLaptop =
+    await _gambarACOutdoor.pickImage(source: ImageSource.camera);
+    if (pilihLaptop != null) {
+      setState(() {
+        gambarAcOutdoorController.text = pilihLaptop.path;
+      });
+    }
+  }
+
 
   Future<String> unggahACIndoor(File indoor) async {
     try {
@@ -272,7 +370,7 @@ class _AddACState extends State<AddAC> {
         btnOkOnPress: () {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => ManajemenAC()),
+            MaterialPageRoute(builder: (context) => const ManajemenAC()),
           );
         },
       ).show();
@@ -375,7 +473,7 @@ class _AddACState extends State<AddAC> {
                       }
                     },
                   ),
-                  SizedBox(height: 25),
+                  const SizedBox(height: 25),
 
                   Padding(
                     padding: const EdgeInsets.only(bottom: 3),
@@ -388,13 +486,13 @@ class _AddACState extends State<AddAC> {
                   const SizedBox(height: 5),
 
                   DropdownSearch<String>(
-                    popupProps: PopupProps.menu(
+                    popupProps: const PopupProps.menu(
                       showSelectedItems: true,
                     ),
                     items: Status,
                     dropdownDecoratorProps: DropDownDecoratorProps(
                       dropdownSearchDecoration: InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                           hintText: "...",
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(30)
@@ -431,10 +529,10 @@ class _AddACState extends State<AddAC> {
                       }
                     },
                   ),
-                  SizedBox(height: 25),
+                  const SizedBox(height: 25),
 
                   Padding(
-                    padding: EdgeInsets.only(bottom: 3),
+                    padding: const EdgeInsets.only(bottom: 3),
                     child: Text(
                       'kapasitas PK',
                       style: TextStyles.title
@@ -454,9 +552,9 @@ class _AddACState extends State<AddAC> {
                       }
                     },
                   ),
-                  SizedBox(height: 25),
+                  const SizedBox(height: 25),
                   Padding(
-                    padding: EdgeInsets.only(bottom: 3),
+                    padding: const EdgeInsets.only(bottom: 3),
                     child: Text(
                       'Ruangan',
                       style: TextStyles.title
@@ -503,9 +601,11 @@ class _AddACState extends State<AddAC> {
                     selectedImageName: gambarAcIndoorController.text.isNotEmpty
                         ? gambarAcIndoorController.text.split('/').last
                         : '',
-                    onPressed: PilihIndoor,
+                    onPressed: () {
+                      pilihSumberGambar(true); // false untuk Outdoor
+                    },
                   ),
-                  SizedBox(height: 25),
+                  const SizedBox(height: 25),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 3),
                     child: Text(
@@ -521,19 +621,22 @@ class _AddACState extends State<AddAC> {
                       selectedImageName: gambarAcIndoorController.text.isNotEmpty
                           ? gambarAcOutdoorController.text.split('/').last
                           : '',
-                      onPressed: PilihOutdoor),
+                    onPressed: () {
+                      pilihSumberGambar(false); // false untuk Outdoor
+                    },
+                  ),
                   const SizedBox(height: 25),
 
                   ListView.builder(
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     itemCount: Kebutuhan_AC.length,
                     itemBuilder: (context, index) {
                       return ListTile(
                         title: Text(Kebutuhan_AC[index].namaKebutuhanAC), // Accessing the property directly
                         subtitle: Text('${Kebutuhan_AC[index].masaKebutuhanAC} Bulan'), // Accessing the property directly
                         trailing: IconButton(
-                          icon: Icon(Icons.delete),
+                          icon: const Icon(Icons.delete),
                           onPressed: () {
                             ApusKebutuhan(index);
                           },

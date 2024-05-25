@@ -15,9 +15,15 @@ class ExportCatatans extends StatefulWidget {
 
 class _ExportCatatanState extends State<ExportCatatans> {
   String selectedWaktu = "";
+  String selectedJenis = "";
+  String selectedTimeOrType = "";
   int totalCatatan = 0;
+  int totalCatatanJenisAset = 0;
   List<String> kategoriTerpilih = [];
+  List<String> TimeAtauType = [];
+  List<String> JenisTerpilih = [];
   late List<String> DokCatatanEX = [];
+  late List<String> DokJenisEX = [];
   final namaFile = TextEditingController();
   final List<String> Waktu = [
     "Bulan ini",
@@ -25,10 +31,41 @@ class _ExportCatatanState extends State<ExportCatatans> {
     "Semua",
   ];
 
+  final List<String> JenisAset = [
+    "AC",
+    "PC",
+    "Laptop",
+    "Motor",
+    "Mobil"
+  ];
+
+  final List<String> byTimeOrJenis = [
+    "Berdasarkan Waktu Diservis",
+    "Berdasarkan Jenis Aset",
+  ];
+
   void hitungTotalCatatan(List<String> dataCatatan) {
     setState(() {
       totalCatatan = dataCatatan.length;
     });
+  }
+
+  void hitungJenisCatatan(List<String> jenisCatatan) {
+    setState(() {
+      totalCatatanJenisAset = jenisCatatan.length;
+    });
+  }
+
+  Future<void> getTypeorTime(List<String> selectedCategories) async {
+    if (selectedCategories.contains('Berdasarkan Waktu Diservis')) {
+      print('waktu servis ini');
+      return;
+    }
+
+    if (selectedCategories.contains('Berdasarkan Jenis Aset')) {
+      print('waktu servis ini');
+      return;
+    }
   }
 
   Future<void> getCatatan(List<String> selectedCategories) async {
@@ -47,6 +84,24 @@ class _ExportCatatanState extends State<ExportCatatans> {
       return;
     }
   }
+
+  Future<void> getJenis(List<String> selectedCategories) async {
+    Query<Map<String, dynamic>> query =
+    FirebaseFirestore.instance.collection('Catatan Servis');
+
+    if (selectedCategories.isNotEmpty) {
+      query = query.where('Jenis Aset', whereIn: selectedCategories);
+    }
+
+    final QuerySnapshot<Map<String, dynamic>> snapshot = await query.get();
+
+    setState(() {
+      DokJenisEX = snapshot.docs.map((doc) => doc.id).toList();
+      // Hitung total catatan berdasarkan jenis
+      hitungJenisCatatan(DokJenisEX);
+    });
+  }
+
 
   Future<void> getAllCatatan() async {
     Query<Map<String, dynamic>> query =
@@ -160,20 +215,11 @@ class _ExportCatatanState extends State<ExportCatatans> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(bottom: 10),
-                        child: Row(
+                        child: Column(
                           children: [
-                            const Padding(
-                              padding: EdgeInsets.only(left: 30, right: 30),
-                              child: Icon(
-                                Icons.download_for_offline,
-                                size: 55,
-                                color: Warna.green,
-                              ),
-                            ),
 
-                            // Ini dropdown menu
                             Container(
-                              width: 263,
+                              width: 350,
                               decoration: BoxDecoration(
                                 color: Warna.white,
                                 borderRadius: BorderRadius.circular(25),
@@ -190,112 +236,209 @@ class _ExportCatatanState extends State<ExportCatatans> {
                                 popupProps: const PopupProps.menu(
                                   showSelectedItems: true,
                                 ),
-                                items: Waktu,
+                                items: byTimeOrJenis,
                                 dropdownDecoratorProps: DropDownDecoratorProps(
                                   dropdownSearchDecoration: InputDecoration(
                                       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                                      hintText: "Pilih...",
+                                      hintText: "Pilih Opsi Export...",
                                       border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(30),
+                                        borderRadius: BorderRadius.circular(30),
                                       )
                                   ),
                                 ),
                                 onChanged: (selectedValue){
                                   print(selectedValue);
                                   setState(() {
-                                    selectedWaktu = selectedValue ?? "";
-                                    if (selectedWaktu.isNotEmpty) {
-                                      if (selectedWaktu == "Semua") {
-                                        kategoriTerpilih = ["Semua"];
-                                      } else if (selectedWaktu == "Bulan ini") {
-                                        kategoriTerpilih = ["Bulan ini"];
-                                      } else if (selectedWaktu == "Tahun ini") {
-                                        kategoriTerpilih = ["Tahun ini"];
+                                    selectedTimeOrType = selectedValue ?? "";
+                                    if (selectedTimeOrType.isNotEmpty) {
+                                      if (selectedTimeOrType == "Berdasarkan Waktu Diservis") {
+                                        TimeAtauType = ["Berdasarkan Waktu Diservis"];
+                                      } else if (selectedTimeOrType == "Berdasarkan Jenis Aset") {
+                                        TimeAtauType = ["Berdasarkan Jenis Aset"];
                                       }
-                                      getCatatan(kategoriTerpilih);
+                                      getTypeorTime(TimeAtauType);
                                     }
                                   });
                                 },
                               ),
                             ),
+                            const SizedBox(height: 20),
+
+                            if (selectedTimeOrType == "Berdasarkan Waktu Diservis") ...[
+                              Container(
+                                width: 350,
+                                decoration: BoxDecoration(
+                                  color: Warna.white,
+                                  borderRadius: BorderRadius.circular(25),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.blueGrey.shade500.withOpacity(0.2),
+                                      spreadRadius: 2,
+                                      blurRadius: 3,
+                                      offset: const Offset(0, 2), // changes position of shadow
+                                    ),
+                                  ],
+                                ),
+                                child: DropdownSearch<String>(
+                                  popupProps: const PopupProps.menu(
+                                    showSelectedItems: true,
+                                  ),
+                                  items: Waktu,
+                                  dropdownDecoratorProps: DropDownDecoratorProps(
+                                    dropdownSearchDecoration: InputDecoration(
+                                        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                                        hintText: "Sort Tempo Waktu...",
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(30),
+                                        )
+                                    ),
+                                  ),
+                                  onChanged: (selectedValue){
+                                    print(selectedValue);
+                                    setState(() {
+                                      selectedWaktu = selectedValue ?? "";
+                                      if (selectedWaktu.isNotEmpty) {
+                                        if (selectedWaktu == "Semua") {
+                                          kategoriTerpilih = ["Semua"];
+                                        } else if (selectedWaktu == "Bulan ini") {
+                                          kategoriTerpilih = ["Bulan ini"];
+                                        } else if (selectedWaktu == "Tahun ini") {
+                                          kategoriTerpilih = ["Tahun ini"];
+                                        }
+                                        getCatatan(kategoriTerpilih);
+                                      }
+                                    });
+                                  },
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 35, bottom: 10),
+                                    child: Text(
+                                      "Total Item: $totalCatatan",
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: -0.5,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+
+                            if (selectedTimeOrType == "Berdasarkan Jenis Aset") ...[
+                              Container(
+                                width: 350,
+                                decoration: BoxDecoration(
+                                  color: Warna.white,
+                                  borderRadius: BorderRadius.circular(25),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.blueGrey.shade500.withOpacity(0.2),
+                                      spreadRadius: 2,
+                                      blurRadius: 3,
+                                      offset: const Offset(0, 2), // changes position of shadow
+                                    ),
+                                  ],
+                                ),
+                                child: DropdownSearch<String>(
+                                  popupProps: const PopupProps.menu(
+                                    showSelectedItems: true,
+                                  ),
+                                  items: JenisAset,
+                                  dropdownDecoratorProps: DropDownDecoratorProps(
+                                    dropdownSearchDecoration: InputDecoration(
+                                        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                                        hintText: "Jenis Aset...",
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(25),
+                                        )
+                                    ),
+                                  ),
+                                  onChanged: (selectedValue) async {
+                                    print(selectedValue);
+                                    setState(() {
+                                      selectedJenis = selectedValue ?? "";
+                                      if (selectedJenis.isNotEmpty) {
+                                        getJenis([selectedJenis]);
+                                      }
+                                    });
+                                  },
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 35, bottom: 10),
+                                    child: Text(
+                                      "Total Jenis: $totalCatatanJenisAset",
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: -0.5,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                            const SizedBox(height: 10),
+
+                            Container(
+                              width: 350,
+                              height: 45,
+                              decoration: BoxDecoration(
+                                color: Warna.white,
+                                borderRadius: BorderRadius.circular(25),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.blueGrey.shade500.withOpacity(0.2),
+                                    spreadRadius: 2,
+                                    blurRadius: 3,
+                                    offset: const Offset(0, 2), // changes position of shadow
+                                  ),
+                                ],
+                              ),
+                              child: TextFormField(
+                                controller: namaFile,
+                                decoration: const InputDecoration(
+                                  hintText: 'Nama File',
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                                  border: InputBorder.none,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            ElevatedButton(
+                              onPressed: () {
+                                // Logic untuk mengekspor data berdasarkan pilihan dropdown dan nama file
+                              },
+                              child: const Text('Export Data'),
+                              style: ElevatedButton.styleFrom(
+                                primary: Warna.green,
+                                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(25),
+                                ),
+                                textStyle: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
-
-                      Row(
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.only(left: 35, bottom: 10),
-                            child: Text("Total item: ",
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: -0.5,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 5, bottom: 10),
-                            child: Text(
-                              totalCatatan.toString(),
-                              style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: -0.5,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-
-
-                      Column(
-                        children: [
-                          MyTextField(
-                                textInputType: TextInputType.text,
-                                hint: 'Nama File...',
-                                textInputAction: TextInputAction.done,
-                                controller: namaFile),
-
-                          Padding(
-                            padding: const EdgeInsets.only(top: 25),
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: ElevatedButton(
-                                onPressed: (){
-                                  exportExcel(
-                                      dokumenCatatan: DokCatatanEX,
-                                      namafile: namaFile.text,
-                                      context: context);
-                                },
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor: Warna.green,
-                                    minimumSize: const Size(150, 40),
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(25))
-                                ),
-                                child: SizedBox(
-                                  width: 200,
-                                  child: Center(
-                                    child: Text(
-                                      'Export',
-                                      style: TextStyles.title
-                                          .copyWith(fontSize: 18, color: Colors.white),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                            ],
-                          ),
-                        ],
-                      ),
-                ),
+                    ],
+                  ),
                 ),
               ),
             ),
+          ),
         ],
       ),
     );

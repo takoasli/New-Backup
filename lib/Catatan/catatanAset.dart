@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -12,6 +13,7 @@ import '../Aset/ControllerLogic.dart';
 import '../komponen/kotakBiaya.dart';
 import '../komponen/style.dart';
 import '../textfield/PhotoField.dart';
+import '../textfield/textfields.dart';
 
 
 class Catatan extends StatefulWidget {
@@ -36,6 +38,7 @@ class _CatatanState extends State<Catatan> {
 
   final isiDialog = TextEditingController();
   final isiBiaya = TextEditingController();
+  final TeknisiController = TextEditingController();
   final CatatanLengkapController = TextEditingController();
   final hargaIsiBiaya = TextEditingController(text: '');
   late String idAset;
@@ -47,6 +50,9 @@ class _CatatanState extends State<Catatan> {
   String selectedKebutuhan = "";
   List<List<dynamic>> List_Kebutuhan = [];
   List biayaKebutuhans = [];
+
+  final pengguna = FirebaseAuth.instance.currentUser!;
+  String namaPengguna = '';
 
 
   void checkBoxberubah(bool? value, int index) {
@@ -188,7 +194,8 @@ class _CatatanState extends State<Catatan> {
           CatatanLengkapController.text,
           hitungTotalBiaya(),
           jenisAset,
-          fotoBukti
+          fotoBukti,
+        TeknisiController.text,
       );
 
       AwesomeDialog(
@@ -240,7 +247,8 @@ class _CatatanState extends State<Catatan> {
       String CatatanLengkap,
       double totalBiaya,
       String jenisAset,
-      String GambarBukti) async{
+      String GambarBukti,
+      String Teknisi) async{
     await FirebaseFirestore.instance.collection('Catatan Servis').add({
       'Nama Aset': merekAset,
       'ID Aset': idAset,
@@ -251,11 +259,10 @@ class _CatatanState extends State<Catatan> {
       'Total Biaya' : totalBiaya,
       'Jenis Aset' : jenisAset,
       'Tanggal Dilakukan Servis': FieldValue.serverTimestamp(),
-      'Foto Bukti' : GambarBukti
+      'Foto Bukti' : GambarBukti,
+      'Teknisi Yang Mengerjakan' : Teknisi
     });
   }
-
-
 
 
   @override
@@ -266,6 +273,21 @@ class _CatatanState extends State<Catatan> {
     jenisAset = '${widget.Jenis_Aset}';
     lokasi = '${widget.lokasiAset}';
     List_Kebutuhan = List<List<dynamic>>.from(widget.List_Kebutuhan.map((item) => [item, false]));
+    fetchNamaPengguna();
+  }
+
+  void fetchNamaPengguna() async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('User')
+        .where("Email", isEqualTo: pengguna.email)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      setState(() {
+        namaPengguna = snapshot.docs.first.data()['Nama'];
+        TeknisiController.text = namaPengguna;
+      });
+    }
   }
 
   @override
@@ -282,7 +304,7 @@ class _CatatanState extends State<Catatan> {
             letterSpacing: -0.5,
           ),
         ),
-        elevation: 1,
+        elevation: 0,
         centerTitle: false,
       ),
 
@@ -330,7 +352,7 @@ class _CatatanState extends State<Catatan> {
                               Text(merekAset,
                               style: TextStyles.title.copyWith(fontSize: 20)
                               ),
-                              SizedBox(height: 5.0),
+                              const SizedBox(height: 5.0),
                               Text(idAset,
                               style: TextStyles.body.copyWith(fontSize: 17),
                               ),
@@ -343,6 +365,40 @@ class _CatatanState extends State<Catatan> {
                       ),
                     ),
                     const SizedBox(height: 20),
+
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 25.0),
+                        child: Text('Teknisi yang Bekerja',
+                          style: TextStyles.title.copyWith(fontSize: 20, color: Warna.white),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+
+                    Container(
+                      width: 350,
+                      height: 49,
+                      decoration: BoxDecoration(
+                        color: Warna.white,
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      child: MyTextField(
+                        textInputType: TextInputType.text,
+                        hint: '',
+                        textInputAction: TextInputAction.next,
+                        readOnly: true,
+                        controller: TeknisiController,
+                        validator: (value){
+                          if (value==''){
+                            return "Isi kosong, Harap Diisi!";
+                          }
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Padding(
@@ -352,7 +408,7 @@ class _CatatanState extends State<Catatan> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 15),
+                    const SizedBox(height: 5),
                     Padding(
                       padding: const EdgeInsets.only(left: 30, right: 30),
                       child: Container(
@@ -368,11 +424,13 @@ class _CatatanState extends State<Catatan> {
                                 showSelectedItems: true,
                               ),
                               items: List_Kebutuhan.map((item) => item[0].toString()).toList(),
-                              dropdownDecoratorProps: const DropDownDecoratorProps(
+                              dropdownDecoratorProps: DropDownDecoratorProps(
                                 dropdownSearchDecoration: InputDecoration(
                                     contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                                     hintText: "Pilih...",
-                                  border: InputBorder.none,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
                                 ),
                               ),
                               onChanged: (selectedValue){
@@ -425,7 +483,7 @@ class _CatatanState extends State<Catatan> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 15),
+                    const SizedBox(height: 5),
 
                     Container(
                       width: 350,
@@ -474,7 +532,7 @@ class _CatatanState extends State<Catatan> {
                               ),
                             ),
                           ),
-                          SizedBox(height: 15),
+                          const SizedBox(height: 15),
                         ],
                       ),
                     ),
@@ -488,7 +546,7 @@ class _CatatanState extends State<Catatan> {
                           style: TextStyles.title.copyWith(fontSize: 20, color: Warna.white),),
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 5),
 
                     Container(
                       width: 350,
@@ -501,10 +559,10 @@ class _CatatanState extends State<Catatan> {
                         padding: const EdgeInsets.only(left: 10),
                         child: TextField(
                           controller: CatatanLengkapController,
-                          maxLines: null, // Untuk mengizinkan multiple baris teks
+                          maxLines: null,
                           decoration: const InputDecoration(
                             border: InputBorder.none,
-                            hintText: 'Masukkan catatan tambahan...',
+                            hintText: '',
                           ),
                         ),
                       ),
@@ -520,7 +578,7 @@ class _CatatanState extends State<Catatan> {
                           style: TextStyles.title.copyWith(fontSize: 20, color: Warna.white),),
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 5),
 
                     Container(
                       width: 350,

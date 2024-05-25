@@ -129,6 +129,87 @@ class _editLaptopState extends State<editLaptop> {
     }
   }
 
+  Future<void> pilihSumberGambar(bool isIndoor) async {
+    final pilihSumber = await showDialog<int>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        title: const Text('Pilih Sumber Gambar'),
+        actionsPadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
+        contentPadding: const EdgeInsets.all(20.0),
+        content: Row(
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.green,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 15.0),
+                ),
+                onPressed: () => Navigator.of(context).pop(0), // Pilih dari galeri
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.photo_library, size: 50),
+                    const SizedBox(height: 5),
+                    const Text('Galeri', style: TextStyle(fontSize: 18)),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.green,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 15.0),
+                ),
+                onPressed: () => Navigator.of(context).pop(1), // Ambil foto
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.camera_alt, size: 50),
+                    const SizedBox(height: 5),
+                    const Text('Kamera', style: TextStyle(fontSize: 18)),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (pilihSumber == 0) {
+      // Pilih dari galeri
+      if (isIndoor) {
+        PilihGambarLaptop();
+      }
+    } else if (pilihSumber == 1) {
+      // Ambil foto
+      if (isIndoor) {
+        PilihFotoLaptop();
+      }
+    }
+  }
+
+  void PilihFotoLaptop() async {
+    final pilihLaptop =
+    await _gambarLaptop.pickImage(source: ImageSource.camera);
+    if (pilihLaptop != null) {
+      setState(() {
+        ImglaptopController.text = pilihLaptop.path;
+      });
+    }
+  }
+
   void myAlarmFunctionLaptop(int id) {
     // Lakukan tugas yang diperlukan saat alarm terpicu
     Notif.showTextNotif(
@@ -559,7 +640,9 @@ class _editLaptopState extends State<editLaptop> {
                       selectedImageName: ImglaptopController.text.isNotEmpty
                           ? ImglaptopController.text.split('/').last
                           : '',
-                      onPressed: PilihGambarLaptop),
+                      onPressed: (){
+                        pilihSumberGambar(true);
+                      }),
 
                   const SizedBox(height: 25),
 
@@ -618,7 +701,7 @@ class _editLaptopState extends State<editLaptop> {
                       onPressed: (){
                         if(_formState.currentState!.validate()){
                           UpdateLaptop(widget.dokumenLaptop, dataLaptop);
-                          print("validate suxxes");
+                          print("validate success");
 
                         }else{
 

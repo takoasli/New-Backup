@@ -93,6 +93,87 @@ class _AddPCState extends State<AddPC> {
     }
   }
 
+  void PilihFotoPC() async {
+    final pilihLaptop =
+    await _gambarPC.pickImage(source: ImageSource.camera);
+    if (pilihLaptop != null) {
+      setState(() {
+        ImgPCController.text = pilihLaptop.path;
+      });
+    }
+  }
+
+  Future<void> pilihSumberGambar(bool isIndoor) async {
+    final pilihSumber = await showDialog<int>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        title: const Text('Pilih Sumber Gambar'),
+        actionsPadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
+        contentPadding: const EdgeInsets.all(20.0),
+        content: Row(
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.green,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 15.0),
+                ),
+                onPressed: () => Navigator.of(context).pop(0), // Pilih dari galeri
+                child: const Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.photo_library, size: 50),
+                    SizedBox(height: 5),
+                    Text('Galeri', style: TextStyle(fontSize: 18)),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.green,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 15.0),
+                ),
+                onPressed: () => Navigator.of(context).pop(1), // Ambil foto
+                child: const Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.camera_alt, size: 50),
+                    SizedBox(height: 5),
+                    Text('Kamera', style: TextStyle(fontSize: 18)),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (pilihSumber == 0) {
+      // Pilih dari galeri
+      if (isIndoor) {
+        PilihGambarPC();
+      }
+    } else if (pilihSumber == 1) {
+      // Ambil foto
+      if (isIndoor) {
+        PilihFotoPC();
+      }
+    }
+  }
+
   int generateRandomId() {
     Random random = Random();
     return random.nextInt(400) + 1;
@@ -544,7 +625,9 @@ class _AddPCState extends State<AddPC> {
                       selectedImageName: ImgPCController.text.isNotEmpty
                           ? ImgPCController.text.split('/').last
                           : '',
-                      onPressed: PilihGambarPC),
+                      onPressed: (){
+                        pilihSumberGambar(true);
+                      }),
                   const SizedBox(height: 25),
 
                   Padding(

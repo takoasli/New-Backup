@@ -205,11 +205,13 @@ class _DashboardsState extends State<Dashboards> {
                         showSelectedItems: true,
                       ),
                       items: Kategori,
-                      dropdownDecoratorProps: const DropDownDecoratorProps(
+                      dropdownDecoratorProps: DropDownDecoratorProps(
                         dropdownSearchDecoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                             hintText: "Pilih...",
-                            border: InputBorder.none
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            )
                         ),
                       ),
                       onChanged: (selectedValue) async {
